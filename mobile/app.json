@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "AstroMachine",
+    "slug": "astromachine",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "astromachine",
+    "splash": {
+      "backgroundColor": "#0a0a1a"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0a0a1a"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-asset"
+    ]
+  }
+}
