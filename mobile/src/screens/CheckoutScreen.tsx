@@ -11,7 +11,6 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-  Alert,
   AccessibilityInfo,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,6 +22,7 @@ import { useCartStore } from '../store/cartStore';
 import { useAuthStore } from '../store/authStore';
 import { simulateCheckout } from '../services/api';
 import { formatCurrency } from '../utils/format';
+import { showMessage } from '../utils/dialog';
 
 interface CheckoutScreenProps {
   onGoBack: () => void;
@@ -60,13 +60,13 @@ export default function CheckoutScreen({ onGoBack, onOrderComplete }: CheckoutSc
       );
       clearCart();
       AccessibilityInfo.announceForAccessibility('Pedido confirmado com sucesso');
-      Alert.alert(
+      await showMessage(
         '🚀 Pedido Confirmado!',
         'Seu pedido foi recebido com sucesso. A AstroMachine começará a preparar seu PC estelar!',
-        [{ text: 'Voltar ao Catálogo', onPress: onOrderComplete }]
+        onOrderComplete
       );
     } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Não foi possível processar o pedido.');
+      await showMessage('Erro', error.message || 'Não foi possível processar o pedido.');
     } finally {
       setIsLoading(false);
     }

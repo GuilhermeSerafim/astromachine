@@ -38,7 +38,7 @@ router.post('/', authMiddleware, adminMiddleware, (req: AuthRequest, res: Respon
     name,
     description,
     price: Number(price),
-    imageUrl: imageUrl || 'https://via.placeholder.com/400x300/1a1a2e/e0e0ff?text=Novo+Produto',
+    imageUrl: imageUrl || '',
     category: category || 'geral',
     specs: specs || '',
     inStock: true,

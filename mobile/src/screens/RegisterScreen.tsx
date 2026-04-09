@@ -12,7 +12,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Alert,
   ScrollView,
   AccessibilityInfo,
 } from 'react-native';
@@ -23,6 +22,7 @@ import { colors, spacing, borderRadius, fontSize } from '../theme';
 import { registerSchema, RegisterForm } from '../utils/validation';
 import { registerAPI } from '../services/api';
 import { useAuthStore } from '../store/authStore';
+import { showMessage } from '../utils/dialog';
 
 interface RegisterScreenProps {
   onNavigateToLogin: () => void;
@@ -54,7 +54,7 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
       await setAuth(response.user, response.token);
       AccessibilityInfo.announceForAccessibility('Cadastro realizado com sucesso');
     } catch (error: any) {
-      Alert.alert('Erro no Cadastro', error.message || 'Não foi possível criar a conta.');
+      await showMessage('Erro no Cadastro', error.message || 'Não foi possível criar a conta.');
       AccessibilityInfo.announceForAccessibility('Erro no cadastro');
     } finally {
       setIsLoading(false);
@@ -71,11 +71,13 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
-        <View style={styles.header} accessibilityRole="header">
+        <View style={styles.header}>
           <View style={styles.logoCircle}>
             <Ionicons name="person-add" size={36} color={colors.primary} />
           </View>
-          <Text style={[styles.title, { fontSize: fs.xl }]}>Criar Conta</Text>
+          <Text style={[styles.title, { fontSize: fs.xl }]} accessibilityRole="header">
+            Criar Conta
+          </Text>
           <Text style={[styles.subtitle, { fontSize: fs.sm }]}>
             Junte-se ao universo AstroMachine
           </Text>

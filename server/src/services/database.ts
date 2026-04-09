@@ -17,14 +17,14 @@ class Database {
     this.seed();
   }
 
-  private async hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, 10);
+  private hashPassword(password: string): string {
+    return bcrypt.hashSync(password, 10);
   }
 
-  async seed() {
+  seed() {
     // Usuários seed
-    const adminPass = await this.hashPassword('admin123');
-    const clientPass = await this.hashPassword('cliente123');
+    const adminPass = this.hashPassword('admin123');
+    const clientPass = this.hashPassword('cliente123');
 
     this.users = [
       {
@@ -52,7 +52,7 @@ class Database {
         name: 'Build Andromeda',
         description: 'PC gamer de alto desempenho com temática da galáxia Andrômeda. RTX 4070, Ryzen 7 7800X3D, 32GB DDR5.',
         price: 8999.90,
-        imageUrl: 'https://via.placeholder.com/400x300/1a1a2e/e0e0ff?text=Andromeda',
+        imageUrl: '',
         category: 'high-end',
         specs: 'RTX 4070 | Ryzen 7 7800X3D | 32GB DDR5 | 1TB NVMe | Water Cooler 240mm',
         inStock: true,
@@ -63,7 +63,7 @@ class Database {
         name: 'PC Orion',
         description: 'Workstation robusta inspirada na constelação de Orion. Ideal para criadores de conteúdo e streamers.',
         price: 12499.90,
-        imageUrl: 'https://via.placeholder.com/400x300/0f0f23/e0e0ff?text=Orion',
+        imageUrl: '',
         category: 'workstation',
         specs: 'RTX 4080 | Ryzen 9 7950X | 64GB DDR5 | 2TB NVMe | Custom Loop',
         inStock: true,
@@ -74,7 +74,7 @@ class Database {
         name: 'Nebula Prime',
         description: 'Build intermediária com visual nebuloso e LEDs RGB sincronizados. Perfeita para o gamer moderno.',
         price: 5999.90,
-        imageUrl: 'https://via.placeholder.com/400x300/16213e/e0e0ff?text=Nebula+Prime',
+        imageUrl: '',
         category: 'mid-range',
         specs: 'RTX 4060 Ti | Ryzen 5 7600X | 16GB DDR5 | 512GB NVMe | Air Cooler',
         inStock: true,
@@ -85,7 +85,7 @@ class Database {
         name: 'Exoplaneta X',
         description: 'Setup compacto Mini-ITX com design futurista inspirado em exoplanetas. Portabilidade sem perder potência.',
         price: 7499.90,
-        imageUrl: 'https://via.placeholder.com/400x300/1a1a3e/e0e0ff?text=Exoplaneta+X',
+        imageUrl: '',
         category: 'compact',
         specs: 'RTX 4070 | Ryzen 7 7700X | 32GB DDR5 | 1TB NVMe | Mini-ITX Case',
         inStock: true,
@@ -96,7 +96,7 @@ class Database {
         name: 'Supernova Elite',
         description: 'O top de linha da AstroMachine. Performance explosiva como uma supernova, com componentes de ponta.',
         price: 19999.90,
-        imageUrl: 'https://via.placeholder.com/400x300/0d1b2a/e0e0ff?text=Supernova+Elite',
+        imageUrl: '',
         category: 'extreme',
         specs: 'RTX 4090 | Ryzen 9 7950X3D | 128GB DDR5 | 4TB NVMe | Custom Loop Hardline',
         inStock: true,
@@ -107,7 +107,7 @@ class Database {
         name: 'Cosmos Starter',
         description: 'Entrada ideal para quem está começando no universo gamer. Custo-benefício estelar.',
         price: 3499.90,
-        imageUrl: 'https://via.placeholder.com/400x300/1b2838/e0e0ff?text=Cosmos+Starter',
+        imageUrl: '',
         category: 'entry',
         specs: 'RTX 4060 | Ryzen 5 5600 | 16GB DDR4 | 512GB NVMe | Air Cooler',
         inStock: true,

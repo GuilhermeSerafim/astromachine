@@ -12,7 +12,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Alert,
   ScrollView,
   AccessibilityInfo,
 } from 'react-native';
@@ -23,6 +22,7 @@ import { colors, spacing, borderRadius, fontSize } from '../theme';
 import { loginSchema, LoginForm } from '../utils/validation';
 import { loginAPI } from '../services/api';
 import { useAuthStore } from '../store/authStore';
+import { showMessage } from '../utils/dialog';
 
 interface LoginScreenProps {
   onNavigateToRegister: () => void;
@@ -54,7 +54,7 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
       await setAuth(response.user, response.token);
       AccessibilityInfo.announceForAccessibility('Login realizado com sucesso');
     } catch (error: any) {
-      Alert.alert('Erro no Login', error.message || 'Não foi possível fazer login.');
+      await showMessage('Erro no Login', error.message || 'Não foi possível fazer login.');
       AccessibilityInfo.announceForAccessibility('Erro no login');
     } finally {
       setIsLoading(false);
@@ -71,7 +71,7 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
         keyboardShouldPersistTaps="handled"
       >
         {/* Logo / Ícone */}
-        <View style={styles.logoContainer} accessibilityRole="header">
+        <View style={styles.logoContainer}>
           <View style={styles.logoCircle}>
             <Ionicons name="planet" size={48} color={colors.primary} />
           </View>

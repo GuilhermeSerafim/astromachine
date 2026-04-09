@@ -11,7 +11,6 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-  Alert,
   AccessibilityInfo,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,6 +21,7 @@ import { productSchema, ProductForm } from '../utils/validation';
 import { Product } from '../types';
 import { createProduct, updateProduct } from '../services/api';
 import { useAuthStore } from '../store/authStore';
+import { showMessage } from '../utils/dialog';
 
 interface AdminFormScreenProps {
   product?: Product;
@@ -67,14 +67,14 @@ export default function AdminFormScreen({ product, onGoBack, onSaved }: AdminFor
       if (isEditing && product) {
         await updateProduct(product.id, payload);
         AccessibilityInfo.announceForAccessibility('Produto atualizado com sucesso');
-        Alert.alert('Sucesso', 'Produto atualizado!', [{ text: 'OK', onPress: onSaved }]);
+        await showMessage('Sucesso', 'Produto atualizado!', onSaved);
       } else {
         await createProduct(payload);
         AccessibilityInfo.announceForAccessibility('Produto criado com sucesso');
-        Alert.alert('Sucesso', 'Produto criado!', [{ text: 'OK', onPress: onSaved }]);
+        await showMessage('Sucesso', 'Produto criado!', onSaved);
       }
     } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Não foi possível salvar o produto.');
+      await showMessage('Erro', error.message || 'Não foi possível salvar o produto.');
     } finally {
       setIsLoading(false);
     }

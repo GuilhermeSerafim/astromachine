@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
   Image,
   RefreshControl,
   AccessibilityInfo,
@@ -21,6 +20,7 @@ import { Product } from '../types';
 import { getProducts, deleteProduct } from '../services/api';
 import { useAuthStore } from '../store/authStore';
 import { formatCurrency } from '../utils/format';
+import { showConfirm, showMessage } from '../utils/dialog';
 
 interface AdminDashboardProps {
   onNavigateToForm: (product?: Product) => void;
@@ -53,34 +53,30 @@ export default function AdminDashboard({ onNavigateToForm, onLogout }: AdminDash
     loadProducts();
   }, [loadProducts]);
 
-  const handleDelete = (product: Product) => {
-    Alert.alert(
+  const handleDelete = async (product: Product) => {
+    await showConfirm(
       'Excluir Produto',
       `Deseja realmente excluir "${product.name}"?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteProduct(product.id);
-              setProducts((prev) => prev.filter((p) => p.id !== product.id));
-              AccessibilityInfo.announceForAccessibility(`${product.name} excluído`);
-            } catch (error) {
-              Alert.alert('Erro', 'Não foi possível excluir o produto.');
-            }
-          },
-        },
-      ]
+      async () => {
+        try {
+          await deleteProduct(product.id);
+          setProducts((prev) => prev.filter((p) => p.id !== product.id));
+          AccessibilityInfo.announceForAccessibility(`${product.name} excluído`);
+        } catch {
+          await showMessage('Erro', 'Não foi possível excluir o produto.');
+        }
+      },
+      { confirmText: 'Excluir', cancelText: 'Cancelar', destructive: true }
     );
   };
 
-  const handleLogout = () => {
-    Alert.alert('Sair', 'Deseja sair da conta de administrador?', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Sair', style: 'destructive', onPress: onLogout },
-    ]);
+  const handleLogout = async () => {
+    await showConfirm(
+      'Sair',
+      'Deseja sair da conta de administrador?',
+      onLogout,
+      { confirmText: 'Sair', cancelText: 'Cancelar', destructive: true }
+    );
   };
 
   const renderProduct = ({ item }: { item: Product }) => (
@@ -115,7 +111,9 @@ export default function AdminDashboard({ onNavigateToForm, onLogout }: AdminDash
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => handleDelete(item)}
+          onPress={() => {
+            void handleDelete(item);
+          }}
           accessibilityLabel={`Excluir ${item.name}`}
           accessibilityRole="button"
         >
@@ -140,7 +138,9 @@ export default function AdminDashboard({ onNavigateToForm, onLogout }: AdminDash
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.logoutButton}
-          onPress={handleLogout}
+          onPress={() => {
+            void handleLogout();
+          }}
           accessibilityLabel="Sair"
           accessibilityRole="button"
         >

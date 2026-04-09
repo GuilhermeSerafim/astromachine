@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, shadows, fontSize } from '../theme';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
+import { selectCartItemCount } from '../store/cartSelectors';
 import { Product } from '../types';
 
 // Screens
@@ -31,7 +32,7 @@ type Screen =
 export default function AppNavigator() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
-  const getItemCount = useCartStore((s) => s.getItemCount);
+  const itemCount = useCartStore(selectCartItemCount);
 
   const isAdmin = user?.role === 'admin';
 
@@ -156,7 +157,7 @@ export default function AppNavigator() {
           <TouchableOpacity
             style={styles.tabItem}
             onPress={() => handleTabPress('cart')}
-            accessibilityLabel={`Carrinho, ${getItemCount()} itens`}
+            accessibilityLabel={`Carrinho, ${itemCount} itens`}
             accessibilityRole="tab"
             accessibilityState={{ selected: activeTab === 'cart' }}
           >
@@ -166,9 +167,9 @@ export default function AppNavigator() {
                 size={26}
                 color={activeTab === 'cart' ? colors.primary : colors.textMuted}
               />
-              {getItemCount() > 0 && (
+              {itemCount > 0 && (
                 <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{getItemCount()}</Text>
+                  <Text style={styles.badgeText}>{itemCount}</Text>
                 </View>
               )}
             </View>

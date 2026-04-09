@@ -11,6 +11,11 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "noEmit": true,
+    "moduleSuffixes": [
+      ".native",
+      ".web",
+      ""
+    ],
     "baseUrl": ".",
     "paths": {
       "@/*": [

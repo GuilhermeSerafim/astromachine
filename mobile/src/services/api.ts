@@ -5,8 +5,11 @@
 import { Product, Service, AuthResponse, Appointment, Order } from '../types';
 import { seedProducts, seedServices } from '../db/seedData';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
-const API_URL = 'http://localhost:3001';
+const API_URL =
+  process.env.EXPO_PUBLIC_API_URL ||
+  (Platform.OS === 'android' ? 'http://10.0.2.2:3001' : 'http://localhost:3001');
 const TIMEOUT_MS = 5000;
 
 // Flag de disponibilidade da API
