@@ -18,7 +18,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { colors, spacing, borderRadius, fontSize } from '../theme';
+import { type AppColors, useThemeColors, spacing, borderRadius, fontSize } from '../theme';
 import { loginSchema, LoginForm } from '../utils/validation';
 import { loginAPI } from '../services/api';
 import { useAuthStore } from '../store/authStore';
@@ -33,6 +33,8 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
   const [showPassword, setShowPassword] = useState(false);
   const setAuth = useAuthStore((s) => s.setAuth);
   const isLargeFont = useAuthStore((s) => s.isLargeFont);
+  const themeColors = useThemeColors();
+  const styles = createStyles(themeColors);
 
   const fs = isLargeFont
     ? { sm: 17, md: 19, lg: 22, xl: 26, title: 36 }
@@ -73,7 +75,7 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
         {/* Logo / Ícone */}
         <View style={styles.logoContainer}>
           <View style={styles.logoCircle}>
-            <Ionicons name="planet" size={48} color={colors.primary} />
+            <Ionicons name="planet" size={48} color={themeColors.primary} />
           </View>
           <Text style={[styles.appName, { fontSize: fs.title }]} accessibilityRole="header">
             AstroMachine
@@ -95,11 +97,11 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
               name="email"
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={[styles.inputWrapper, errors.email && styles.inputError]}>
-                  <Ionicons name="mail-outline" size={20} color={colors.textMuted} style={styles.inputIcon} />
+                  <Ionicons name="mail-outline" size={20} color={themeColors.textMuted} style={styles.inputIcon} />
                   <TextInput
                     style={[styles.input, { fontSize: fs.md }]}
                     placeholder="seu@email.com"
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={themeColors.textMuted}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
@@ -129,11 +131,11 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
               name="password"
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={[styles.inputWrapper, errors.password && styles.inputError]}>
-                  <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} style={styles.inputIcon} />
+                  <Ionicons name="lock-closed-outline" size={20} color={themeColors.textMuted} style={styles.inputIcon} />
                   <TextInput
                     style={[styles.input, { fontSize: fs.md }]}
                     placeholder="••••••"
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={themeColors.textMuted}
                     secureTextEntry={!showPassword}
                     value={value}
                     onChangeText={onChange}
@@ -149,7 +151,7 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
                     <Ionicons
                       name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                       size={20}
-                      color={colors.textMuted}
+                      color={themeColors.textMuted}
                     />
                   </TouchableOpacity>
                 </View>
@@ -183,7 +185,7 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
             accessibilityState={{ disabled: isLoading }}
           >
             {isLoading ? (
-              <ActivityIndicator color={colors.textOnPrimary} />
+              <ActivityIndicator color={themeColors.textOnPrimary} />
             ) : (
               <Text style={[styles.buttonText, { fontSize: fs.lg }]}>Entrar</Text>
             )}
@@ -218,10 +220,10 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (themeColors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -236,20 +238,20 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.md,
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: themeColors.primary,
   },
   appName: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '700',
     letterSpacing: 1,
   },
   subtitle: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     marginTop: spacing.xs,
   },
   formContainer: {
@@ -259,33 +261,33 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   label: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     marginBottom: spacing.xs,
     fontWeight: '500',
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
     paddingHorizontal: spacing.md,
     minHeight: 52,
   },
   inputError: {
-    borderColor: colors.error,
+    borderColor: themeColors.error,
   },
   inputIcon: {
     marginRight: spacing.sm,
   },
   input: {
     flex: 1,
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     paddingVertical: spacing.sm,
   },
   errorText: {
-    color: colors.error,
+    color: themeColors.error,
     marginTop: spacing.xs,
   },
   forgotPassword: {
@@ -294,16 +296,16 @@ const styles = StyleSheet.create({
     padding: spacing.xs,
   },
   forgotPasswordText: {
-    color: colors.accent,
+    color: themeColors.accent,
   },
   button: {
-    backgroundColor: colors.primary,
+    backgroundColor: themeColors.primary,
     borderRadius: borderRadius.md,
     paddingVertical: spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 56,
-    shadowColor: colors.primary,
+    shadowColor: themeColors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -313,7 +315,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    color: colors.textOnPrimary,
+    color: themeColors.textOnPrimary,
     fontWeight: '700',
   },
   registerLink: {
@@ -322,28 +324,28 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   registerText: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
   },
   registerTextBold: {
-    color: colors.accent,
+    color: themeColors.accent,
     fontWeight: '700',
   },
   demoBox: {
     marginTop: spacing.xl,
     padding: spacing.md,
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
     opacity: 0.7,
   },
   demoTitle: {
-    color: colors.accent,
+    color: themeColors.accent,
     fontWeight: '700',
     marginBottom: spacing.xs,
   },
   demoText: {
-    color: colors.textMuted,
+    color: themeColors.textMuted,
     marginBottom: 2,
   },
 });

@@ -16,7 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { colors, spacing, borderRadius, fontSize } from '../theme';
+import { type AppColors, useThemeColors, spacing, borderRadius, fontSize } from '../theme';
 import { productSchema, ProductForm } from '../utils/validation';
 import { Product } from '../types';
 import { createProduct, updateProduct } from '../services/api';
@@ -33,6 +33,8 @@ export default function AdminFormScreen({ product, onGoBack, onSaved }: AdminFor
   const [isLoading, setIsLoading] = useState(false);
   const isEditing = !!product;
   const isLargeFont = useAuthStore((s) => s.isLargeFont);
+  const themeColors = useThemeColors();
+  const styles = createStyles(themeColors);
 
   const fs = isLargeFont
     ? { xs: 15, sm: 17, md: 19, lg: 22, xl: 26 }
@@ -90,7 +92,7 @@ export default function AdminFormScreen({ product, onGoBack, onSaved }: AdminFor
           accessibilityLabel="Voltar"
           accessibilityRole="button"
         >
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+          <Ionicons name="arrow-back" size={24} color={themeColors.textPrimary} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { fontSize: fs.xl }]}>
           {isEditing ? 'Editar Produto' : 'Novo Produto'}
@@ -109,7 +111,7 @@ export default function AdminFormScreen({ product, onGoBack, onSaved }: AdminFor
               <TextInput
                 style={[styles.input, { fontSize: fs.md }, errors.name && styles.inputError]}
                 placeholder="Ex: Build Andromeda"
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor={themeColors.textMuted}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -134,7 +136,7 @@ export default function AdminFormScreen({ product, onGoBack, onSaved }: AdminFor
               <TextInput
                 style={[styles.input, styles.multiline, { fontSize: fs.md }, errors.description && styles.inputError]}
                 placeholder="Descreva o produto..."
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor={themeColors.textMuted}
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
@@ -162,7 +164,7 @@ export default function AdminFormScreen({ product, onGoBack, onSaved }: AdminFor
               <TextInput
                 style={[styles.input, { fontSize: fs.md }, errors.price && styles.inputError]}
                 placeholder="9999.90"
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor={themeColors.textMuted}
                 keyboardType="decimal-pad"
                 value={value}
                 onChangeText={onChange}
@@ -188,7 +190,7 @@ export default function AdminFormScreen({ product, onGoBack, onSaved }: AdminFor
               <TextInput
                 style={[styles.input, { fontSize: fs.md }, errors.category && styles.inputError]}
                 placeholder="Ex: high-end, mid-range, entry"
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor={themeColors.textMuted}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -213,7 +215,7 @@ export default function AdminFormScreen({ product, onGoBack, onSaved }: AdminFor
               <TextInput
                 style={[styles.input, styles.multiline, { fontSize: fs.md }]}
                 placeholder="Ex: RTX 4070 | Ryzen 7 | 32GB DDR5"
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor={themeColors.textMuted}
                 multiline
                 numberOfLines={3}
                 textAlignVertical="top"
@@ -235,10 +237,10 @@ export default function AdminFormScreen({ product, onGoBack, onSaved }: AdminFor
           accessibilityRole="button"
         >
           {isLoading ? (
-            <ActivityIndicator color={colors.textOnPrimary} />
+            <ActivityIndicator color={themeColors.textOnPrimary} />
           ) : (
             <>
-              <Ionicons name="save-outline" size={20} color={colors.textOnPrimary} />
+              <Ionicons name="save-outline" size={20} color={themeColors.textOnPrimary} />
               <Text style={[styles.saveText, { fontSize: fs.lg }]}>
                 {isEditing ? 'Salvar Alterações' : 'Criar Produto'}
               </Text>
@@ -250,10 +252,10 @@ export default function AdminFormScreen({ product, onGoBack, onSaved }: AdminFor
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (themeColors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
   header: {
     flexDirection: 'row',
@@ -267,14 +269,14 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   headerTitle: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '700',
   },
   content: {
@@ -285,18 +287,18 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   label: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     marginBottom: spacing.xs,
     fontWeight: '500',
   },
   input: {
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     minHeight: 52,
   },
   multiline: {
@@ -304,15 +306,15 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
   },
   inputError: {
-    borderColor: colors.error,
+    borderColor: themeColors.error,
   },
   errorText: {
-    color: colors.error,
+    color: themeColors.error,
     marginTop: spacing.xs,
   },
   saveButton: {
     flexDirection: 'row',
-    backgroundColor: colors.primary,
+    backgroundColor: themeColors.primary,
     borderRadius: borderRadius.md,
     paddingVertical: spacing.md,
     alignItems: 'center',
@@ -325,7 +327,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   saveText: {
-    color: colors.textOnPrimary,
+    color: themeColors.textOnPrimary,
     fontWeight: '700',
   },
 });

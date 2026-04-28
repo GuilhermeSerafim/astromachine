@@ -13,7 +13,7 @@ import {
   AccessibilityInfo,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, borderRadius, fontSize, shadows } from '../theme';
+import { type AppColors, useThemeColors, spacing, borderRadius, fontSize, shadows } from '../theme';
 import { Product } from '../types';
 import { useCartStore } from '../store/cartStore';
 import { useAuthStore } from '../store/authStore';
@@ -27,6 +27,8 @@ interface ProductDetailScreenProps {
 export default function ProductDetailScreen({ product, onGoBack }: ProductDetailScreenProps) {
   const addItem = useCartStore((s) => s.addItem);
   const isLargeFont = useAuthStore((s) => s.isLargeFont);
+  const themeColors = useThemeColors();
+  const styles = createStyles(themeColors);
 
   const fs = isLargeFont
     ? { xs: 15, sm: 17, md: 19, lg: 22, xl: 26, xxl: 33 }
@@ -47,7 +49,7 @@ export default function ProductDetailScreen({ product, onGoBack }: ProductDetail
           accessibilityLabel="Voltar"
           accessibilityRole="button"
         >
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+          <Ionicons name="arrow-back" size={24} color={themeColors.textPrimary} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { fontSize: fs.lg }]}>Detalhes</Text>
         <View style={{ width: 44 }} />
@@ -60,7 +62,7 @@ export default function ProductDetailScreen({ product, onGoBack }: ProductDetail
             <Image source={{ uri: product.imageUrl }} style={styles.image} resizeMode="cover" />
           ) : (
             <View style={styles.imagePlaceholder}>
-              <Ionicons name="desktop-outline" size={64} color={colors.primary} />
+              <Ionicons name="desktop-outline" size={64} color={themeColors.primary} />
             </View>
           )}
         </View>
@@ -93,12 +95,12 @@ export default function ProductDetailScreen({ product, onGoBack }: ProductDetail
             <Ionicons
               name={product.inStock ? 'checkmark-circle' : 'close-circle'}
               size={20}
-              color={product.inStock ? colors.success : colors.error}
+              color={product.inStock ? themeColors.success : themeColors.error}
             />
             <Text
               style={[
                 styles.statusText,
-                { color: product.inStock ? colors.success : colors.error, fontSize: fs.sm },
+                { color: product.inStock ? themeColors.success : themeColors.error, fontSize: fs.sm },
               ]}
             >
               {product.inStock ? 'Em estoque' : 'Indisponível'}
@@ -115,7 +117,7 @@ export default function ProductDetailScreen({ product, onGoBack }: ProductDetail
           accessibilityLabel={`Adicionar ${product.name} ao carrinho`}
           accessibilityRole="button"
         >
-          <Ionicons name="cart-outline" size={22} color={colors.textOnPrimary} />
+          <Ionicons name="cart-outline" size={22} color={themeColors.textOnPrimary} />
           <Text style={[styles.addToCartText, { fontSize: fs.lg }]}>Adicionar ao Carrinho</Text>
         </TouchableOpacity>
       </View>
@@ -123,10 +125,10 @@ export default function ProductDetailScreen({ product, onGoBack }: ProductDetail
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (themeColors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
   header: {
     flexDirection: 'row',
@@ -140,14 +142,14 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   headerTitle: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '600',
   },
   content: {
@@ -156,7 +158,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
     height: 260,
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
   },
   image: {
     width: '100%',
@@ -167,38 +169,38 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
   },
   infoContainer: {
     padding: spacing.lg,
   },
   category: {
-    color: colors.primary,
+    color: themeColors.primary,
     fontWeight: '600',
     letterSpacing: 1,
     marginBottom: spacing.xs,
   },
   name: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '700',
     marginBottom: spacing.sm,
   },
   price: {
-    color: colors.accent,
+    color: themeColors.accent,
     fontWeight: '700',
   },
   divider: {
     height: 1,
-    backgroundColor: colors.border,
+    backgroundColor: themeColors.border,
     marginVertical: spacing.lg,
   },
   sectionTitle: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '600',
     marginBottom: spacing.sm,
   },
   description: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     lineHeight: 24,
     marginBottom: spacing.lg,
   },
@@ -209,15 +211,15 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   specBadge: {
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
     borderRadius: borderRadius.full,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   specText: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
   },
   statusRow: {
     flexDirection: 'row',
@@ -232,14 +234,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     padding: spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: themeColors.border,
   },
   addToCartButton: {
     flexDirection: 'row',
-    backgroundColor: colors.primary,
+    backgroundColor: themeColors.primary,
     borderRadius: borderRadius.md,
     paddingVertical: spacing.md,
     alignItems: 'center',
@@ -249,7 +251,7 @@ const styles = StyleSheet.create({
     ...shadows.button,
   },
   addToCartText: {
-    color: colors.textOnPrimary,
+    color: themeColors.textOnPrimary,
     fontWeight: '700',
   },
 });

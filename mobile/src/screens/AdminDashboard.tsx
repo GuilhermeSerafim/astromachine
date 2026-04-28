@@ -15,7 +15,7 @@ import {
   AccessibilityInfo,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, borderRadius, fontSize, shadows } from '../theme';
+import { type AppColors, useThemeColors, spacing, borderRadius, fontSize, shadows } from '../theme';
 import { Product } from '../types';
 import { getProducts, deleteProduct } from '../services/api';
 import { useAuthStore } from '../store/authStore';
@@ -24,14 +24,21 @@ import { showConfirm, showMessage } from '../utils/dialog';
 
 interface AdminDashboardProps {
   onNavigateToForm: (product?: Product) => void;
+  onNavigateToAccessibility: () => void;
   onLogout: () => void;
 }
 
-export default function AdminDashboard({ onNavigateToForm, onLogout }: AdminDashboardProps) {
+export default function AdminDashboard({
+  onNavigateToForm,
+  onNavigateToAccessibility,
+  onLogout,
+}: AdminDashboardProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const isLargeFont = useAuthStore((s) => s.isLargeFont);
+  const themeColors = useThemeColors();
+  const styles = createStyles(themeColors);
 
   const fs = isLargeFont
     ? { xs: 15, sm: 17, md: 19, lg: 22, xl: 26 }
@@ -89,7 +96,7 @@ export default function AdminDashboard({ onNavigateToForm, onLogout }: AdminDash
           <Image source={{ uri: item.imageUrl }} style={styles.cardImage} />
         ) : (
           <View style={styles.cardImagePlaceholder}>
-            <Ionicons name="desktop-outline" size={24} color={colors.primary} />
+            <Ionicons name="desktop-outline" size={24} color={themeColors.primary} />
           </View>
         )}
       </View>
@@ -107,7 +114,7 @@ export default function AdminDashboard({ onNavigateToForm, onLogout }: AdminDash
           accessibilityLabel={`Editar ${item.name}`}
           accessibilityRole="button"
         >
-          <Ionicons name="create-outline" size={20} color={colors.accent} />
+          <Ionicons name="create-outline" size={20} color={themeColors.accent} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.deleteButton}
@@ -117,7 +124,7 @@ export default function AdminDashboard({ onNavigateToForm, onLogout }: AdminDash
           accessibilityLabel={`Excluir ${item.name}`}
           accessibilityRole="button"
         >
-          <Ionicons name="trash-outline" size={20} color={colors.error} />
+          <Ionicons name="trash-outline" size={20} color={themeColors.error} />
         </TouchableOpacity>
       </View>
     </View>
@@ -126,7 +133,7 @@ export default function AdminDashboard({ onNavigateToForm, onLogout }: AdminDash
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={themeColors.primary} />
         <Text style={[styles.loadingText, { fontSize: fs.md }]}>Carregando...</Text>
       </View>
     );
@@ -144,17 +151,27 @@ export default function AdminDashboard({ onNavigateToForm, onLogout }: AdminDash
           accessibilityLabel="Sair"
           accessibilityRole="button"
         >
-          <Ionicons name="log-out-outline" size={24} color={colors.textPrimary} />
+          <Ionicons name="log-out-outline" size={24} color={themeColors.textPrimary} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { fontSize: fs.xl }]}>Painel Admin</Text>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => onNavigateToForm()}
-          accessibilityLabel="Adicionar novo produto"
-          accessibilityRole="button"
-        >
-          <Ionicons name="add" size={24} color={colors.textOnPrimary} />
-        </TouchableOpacity>
+        <Text style={[styles.headerTitle, { fontSize: fs.xl }]} numberOfLines={1}>Painel Admin</Text>
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            style={styles.settingsButton}
+            onPress={onNavigateToAccessibility}
+            accessibilityLabel="Configurações de acessibilidade"
+            accessibilityRole="button"
+          >
+            <Ionicons name="settings-outline" size={24} color={themeColors.textPrimary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => onNavigateToForm()}
+            accessibilityLabel="Adicionar novo produto"
+            accessibilityRole="button"
+          >
+            <Ionicons name="add" size={24} color={themeColors.textOnPrimary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Stats */}
@@ -185,13 +202,13 @@ export default function AdminDashboard({ onNavigateToForm, onLogout }: AdminDash
               setRefreshing(true);
               loadProducts();
             }}
-            tintColor={colors.primary}
-            colors={[colors.primary]}
+            tintColor={themeColors.primary}
+            colors={[themeColors.primary]}
           />
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Ionicons name="cube-outline" size={48} color={colors.textMuted} />
+            <Ionicons name="cube-outline" size={48} color={themeColors.textMuted} />
             <Text style={[styles.emptyText, { fontSize: fs.md }]}>Nenhum produto cadastrado</Text>
           </View>
         }
@@ -200,10 +217,10 @@ export default function AdminDashboard({ onNavigateToForm, onLogout }: AdminDash
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (themeColors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
   centerContent: {
     justifyContent: 'center',
@@ -216,26 +233,44 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.xxl + spacing.md,
     paddingBottom: spacing.md,
+    gap: spacing.sm,
   },
   logoutButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   headerTitle: {
-    color: colors.textPrimary,
+    flex: 1,
+    textAlign: 'center',
+    color: themeColors.textPrimary,
     fontWeight: '700',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  settingsButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: themeColors.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: themeColors.border,
   },
   addButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.primary,
+    backgroundColor: themeColors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     ...shadows.button,
@@ -248,19 +283,19 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: colors.card,
+    backgroundColor: themeColors.card,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   statValue: {
-    color: colors.accent,
+    color: themeColors.accent,
     fontWeight: '700',
   },
   statLabel: {
-    color: colors.textMuted,
+    color: themeColors.textMuted,
     marginTop: spacing.xs,
   },
   listContent: {
@@ -269,12 +304,12 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: colors.card,
+    backgroundColor: themeColors.card,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
     alignItems: 'center',
   },
   cardImageContainer: {
@@ -291,7 +326,7 @@ const styles = StyleSheet.create({
   cardImagePlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -299,15 +334,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardName: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '600',
   },
   cardPrice: {
-    color: colors.accent,
+    color: themeColors.accent,
     fontWeight: '500',
   },
   cardCategory: {
-    color: colors.textMuted,
+    color: themeColors.textMuted,
   },
   cardActions: {
     flexDirection: 'row',
@@ -317,24 +352,24 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   deleteButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   loadingText: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     marginTop: spacing.md,
   },
   emptyState: {
@@ -343,6 +378,6 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   emptyText: {
-    color: colors.textMuted,
+    color: themeColors.textMuted,
   },
 });

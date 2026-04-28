@@ -12,18 +12,21 @@ import {
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, borderRadius, fontSize } from '../theme';
+import { type AppColors, useThemeColors, spacing, borderRadius, fontSize } from '../theme';
 import { useAuthStore } from '../store/authStore';
 
 interface AccessibilityScreenProps {
   onGoBack: () => void;
+  onLogout: () => void;
 }
 
-export default function AccessibilityScreen({ onGoBack }: AccessibilityScreenProps) {
+export default function AccessibilityScreen({ onGoBack, onLogout }: AccessibilityScreenProps) {
   const isLargeFont = useAuthStore((s) => s.isLargeFont);
   const isHighContrast = useAuthStore((s) => s.isHighContrast);
   const toggleLargeFont = useAuthStore((s) => s.toggleLargeFont);
   const toggleHighContrast = useAuthStore((s) => s.toggleHighContrast);
+  const themeColors = useThemeColors();
+  const styles = createStyles(themeColors);
 
   const fs = isLargeFont
     ? { xs: 15, sm: 17, md: 19, lg: 22, xl: 26, xxl: 33 }
@@ -39,7 +42,7 @@ export default function AccessibilityScreen({ onGoBack }: AccessibilityScreenPro
           accessibilityLabel="Voltar"
           accessibilityRole="button"
         >
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+          <Ionicons name="arrow-back" size={24} color={themeColors.textPrimary} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { fontSize: fs.xl }]}>Acessibilidade</Text>
         <View style={{ width: 44 }} />
@@ -54,7 +57,7 @@ export default function AccessibilityScreen({ onGoBack }: AccessibilityScreenPro
         <View style={styles.optionCard}>
           <View style={styles.optionInfo}>
             <View style={styles.optionIconContainer}>
-              <Ionicons name="text" size={24} color={colors.primary} />
+              <Ionicons name="text" size={24} color={themeColors.primary} />
             </View>
             <View style={styles.optionText}>
               <Text style={[styles.optionTitle, { fontSize: fs.md }]}>Fonte Grande</Text>
@@ -66,8 +69,8 @@ export default function AccessibilityScreen({ onGoBack }: AccessibilityScreenPro
           <Switch
             value={isLargeFont}
             onValueChange={toggleLargeFont}
-            trackColor={{ false: colors.border, true: colors.primaryLight }}
-            thumbColor={isLargeFont ? colors.primary : colors.textMuted}
+            trackColor={{ false: themeColors.border, true: themeColors.primaryLight }}
+            thumbColor={isLargeFont ? themeColors.primary : themeColors.textMuted}
             accessibilityLabel="Ativar fonte grande"
             accessibilityRole="switch"
             accessibilityState={{ checked: isLargeFont }}
@@ -78,7 +81,7 @@ export default function AccessibilityScreen({ onGoBack }: AccessibilityScreenPro
         <View style={styles.optionCard}>
           <View style={styles.optionInfo}>
             <View style={styles.optionIconContainer}>
-              <Ionicons name="contrast" size={24} color={colors.accent} />
+              <Ionicons name="contrast" size={24} color={themeColors.accent} />
             </View>
             <View style={styles.optionText}>
               <Text style={[styles.optionTitle, { fontSize: fs.md }]}>Alto Contraste</Text>
@@ -90,8 +93,8 @@ export default function AccessibilityScreen({ onGoBack }: AccessibilityScreenPro
           <Switch
             value={isHighContrast}
             onValueChange={toggleHighContrast}
-            trackColor={{ false: colors.border, true: colors.primaryLight }}
-            thumbColor={isHighContrast ? colors.accent : colors.textMuted}
+            trackColor={{ false: themeColors.border, true: themeColors.primaryLight }}
+            thumbColor={isHighContrast ? themeColors.accent : themeColors.textMuted}
             accessibilityLabel="Ativar alto contraste"
             accessibilityRole="switch"
             accessibilityState={{ checked: isHighContrast }}
@@ -100,21 +103,30 @@ export default function AccessibilityScreen({ onGoBack }: AccessibilityScreenPro
 
         {/* Informações */}
         <View style={styles.infoCard}>
-          <Ionicons name="information-circle-outline" size={20} color={colors.accent} />
+          <Ionicons name="information-circle-outline" size={20} color={themeColors.accent} />
           <Text style={[styles.infoText, { fontSize: fs.xs }]}>
             O AstroMachine foi desenvolvido seguindo diretrizes de acessibilidade, incluindo
             suporte a leitores de tela, contraste adequado e áreas de toque confortáveis (mínimo 44px).
           </Text>
         </View>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={onLogout}
+          accessibilityLabel="Sair da conta"
+          accessibilityRole="button"
+        >
+          <Ionicons name="log-out-outline" size={22} color={themeColors.error} />
+          <Text style={[styles.logoutText, { fontSize: fs.sm }]}>Sair da conta</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (themeColors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
   header: {
     flexDirection: 'row',
@@ -128,21 +140,21 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   headerTitle: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '700',
   },
   content: {
     padding: spacing.lg,
   },
   description: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     lineHeight: 22,
     marginBottom: spacing.xl,
   },
@@ -150,12 +162,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.card,
+    backgroundColor: themeColors.card,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     marginBottom: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   optionInfo: {
     flexDirection: 'row',
@@ -167,7 +179,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.md,
@@ -176,27 +188,42 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   optionTitle: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '600',
     marginBottom: 2,
   },
   optionDescription: {
-    color: colors.textMuted,
+    color: themeColors.textMuted,
     lineHeight: 18,
   },
   infoCard: {
     flexDirection: 'row',
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     marginTop: spacing.lg,
     gap: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   infoText: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     flex: 1,
     lineHeight: 20,
+  },
+  logoutButton: {
+    minHeight: 52,
+    marginTop: spacing.lg,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: themeColors.error,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  logoutText: {
+    color: themeColors.error,
+    fontWeight: '700',
   },
 });

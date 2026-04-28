@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, spacing, shadows, fontSize } from '../theme';
+import { type AppColors, useThemeColors, spacing, shadows, fontSize } from '../theme';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
 import { selectCartItemCount } from '../store/cartSelectors';
@@ -43,6 +43,8 @@ function AppNavigatorContent() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const itemCount = useCartStore(selectCartItemCount);
+  const themeColors = useThemeColors();
+  const styles = createStyles(themeColors);
 
   const isAdmin = user?.role === 'admin';
 
@@ -107,6 +109,7 @@ function AppNavigatorContent() {
         return (
           <AdminDashboard
             onNavigateToForm={(product) => navigateTo({ name: 'adminForm', product })}
+            onNavigateToAccessibility={() => navigateTo({ name: 'accessibility' })}
             onLogout={handleLogout}
           />
         );
@@ -120,7 +123,10 @@ function AppNavigatorContent() {
         );
       case 'accessibility':
         return (
-          <AccessibilityScreen onGoBack={() => navigateTo({ name: 'catalog' })} />
+          <AccessibilityScreen
+            onGoBack={() => navigateTo(isAdmin ? { name: 'adminDashboard' } : { name: 'catalog' })}
+            onLogout={handleLogout}
+          />
         );
       default:
         return null;
@@ -158,12 +164,12 @@ function AppNavigatorContent() {
             <Ionicons
               name={activeTab === 'home' ? 'home' : 'home-outline'}
               size={26}
-              color={activeTab === 'home' ? colors.primary : colors.textMuted}
+              color={activeTab === 'home' ? themeColors.primary : themeColors.textMuted}
             />
             <Text
               style={[
                 styles.tabLabel,
-                { color: activeTab === 'home' ? colors.primary : colors.textMuted },
+                { color: activeTab === 'home' ? themeColors.primary : themeColors.textMuted },
               ]}
             >
               Início
@@ -181,7 +187,7 @@ function AppNavigatorContent() {
               <Ionicons
                 name={activeTab === 'cart' ? 'cart' : 'cart-outline'}
                 size={26}
-                color={activeTab === 'cart' ? colors.primary : colors.textMuted}
+                color={activeTab === 'cart' ? themeColors.primary : themeColors.textMuted}
               />
               {itemCount > 0 && (
                 <View style={styles.badge}>
@@ -192,7 +198,7 @@ function AppNavigatorContent() {
             <Text
               style={[
                 styles.tabLabel,
-                { color: activeTab === 'cart' ? colors.primary : colors.textMuted },
+                { color: activeTab === 'cart' ? themeColors.primary : themeColors.textMuted },
               ]}
             >
               Carrinho
@@ -204,16 +210,16 @@ function AppNavigatorContent() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (themeColors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: themeColors.border,
     paddingBottom: spacing.md,
     paddingTop: spacing.sm,
     paddingHorizontal: spacing.xxl,
@@ -235,7 +241,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -4,
     right: -10,
-    backgroundColor: colors.accentSecondary,
+    backgroundColor: themeColors.accentSecondary,
     borderRadius: 10,
     width: 20,
     height: 20,
@@ -243,7 +249,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badgeText: {
-    color: colors.textOnPrimary,
+    color: themeColors.textOnPrimary,
     fontSize: 11,
     fontWeight: '700',
   },

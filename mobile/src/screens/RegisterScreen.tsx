@@ -18,7 +18,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { colors, spacing, borderRadius, fontSize } from '../theme';
+import { type AppColors, useThemeColors, spacing, borderRadius, fontSize } from '../theme';
 import { registerSchema, RegisterForm } from '../utils/validation';
 import { registerAPI } from '../services/api';
 import { useAuthStore } from '../store/authStore';
@@ -33,6 +33,8 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
   const [showPassword, setShowPassword] = useState(false);
   const setAuth = useAuthStore((s) => s.setAuth);
   const isLargeFont = useAuthStore((s) => s.isLargeFont);
+  const themeColors = useThemeColors();
+  const styles = createStyles(themeColors);
 
   const fs = isLargeFont
     ? { sm: 17, md: 19, lg: 22, xl: 26, title: 36 }
@@ -73,7 +75,7 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.logoCircle}>
-            <Ionicons name="person-add" size={36} color={colors.primary} />
+            <Ionicons name="person-add" size={36} color={themeColors.primary} />
           </View>
           <Text style={[styles.title, { fontSize: fs.xl }]} accessibilityRole="header">
             Criar Conta
@@ -93,11 +95,11 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
               name="name"
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={[styles.inputWrapper, errors.name && styles.inputError]}>
-                  <Ionicons name="person-outline" size={20} color={colors.textMuted} style={styles.inputIcon} />
+                  <Ionicons name="person-outline" size={20} color={themeColors.textMuted} style={styles.inputIcon} />
                   <TextInput
                     style={[styles.input, { fontSize: fs.md }]}
                     placeholder="Seu nome"
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={themeColors.textMuted}
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -121,11 +123,11 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
               name="email"
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={[styles.inputWrapper, errors.email && styles.inputError]}>
-                  <Ionicons name="mail-outline" size={20} color={colors.textMuted} style={styles.inputIcon} />
+                  <Ionicons name="mail-outline" size={20} color={themeColors.textMuted} style={styles.inputIcon} />
                   <TextInput
                     style={[styles.input, { fontSize: fs.md }]}
                     placeholder="seu@email.com"
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={themeColors.textMuted}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     value={value}
@@ -151,11 +153,11 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
               name="password"
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={[styles.inputWrapper, errors.password && styles.inputError]}>
-                  <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} style={styles.inputIcon} />
+                  <Ionicons name="lock-closed-outline" size={20} color={themeColors.textMuted} style={styles.inputIcon} />
                   <TextInput
                     style={[styles.input, { fontSize: fs.md }]}
                     placeholder="••••••"
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={themeColors.textMuted}
                     secureTextEntry={!showPassword}
                     value={value}
                     onChangeText={onChange}
@@ -169,7 +171,7 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                     <Ionicons
                       name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                       size={20}
-                      color={colors.textMuted}
+                      color={themeColors.textMuted}
                     />
                   </TouchableOpacity>
                 </View>
@@ -190,11 +192,11 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
               name="confirmPassword"
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={[styles.inputWrapper, errors.confirmPassword && styles.inputError]}>
-                  <Ionicons name="shield-checkmark-outline" size={20} color={colors.textMuted} style={styles.inputIcon} />
+                  <Ionicons name="shield-checkmark-outline" size={20} color={themeColors.textMuted} style={styles.inputIcon} />
                   <TextInput
                     style={[styles.input, { fontSize: fs.md }]}
                     placeholder="••••••"
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={themeColors.textMuted}
                     secureTextEntry={!showPassword}
                     value={value}
                     onChangeText={onChange}
@@ -220,7 +222,7 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
             accessibilityRole="button"
           >
             {isLoading ? (
-              <ActivityIndicator color={colors.textOnPrimary} />
+              <ActivityIndicator color={themeColors.textOnPrimary} />
             ) : (
               <Text style={[styles.buttonText, { fontSize: fs.lg }]}>Cadastrar</Text>
             )}
@@ -244,10 +246,10 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (themeColors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -262,19 +264,19 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.md,
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: themeColors.primary,
   },
   title: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '700',
   },
   subtitle: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     marginTop: spacing.xs,
   },
   formContainer: {
@@ -284,44 +286,44 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   label: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     marginBottom: spacing.xs,
     fontWeight: '500',
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
     paddingHorizontal: spacing.md,
     minHeight: 52,
   },
   inputError: {
-    borderColor: colors.error,
+    borderColor: themeColors.error,
   },
   inputIcon: {
     marginRight: spacing.sm,
   },
   input: {
     flex: 1,
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     paddingVertical: spacing.sm,
   },
   errorText: {
-    color: colors.error,
+    color: themeColors.error,
     marginTop: spacing.xs,
   },
   button: {
-    backgroundColor: colors.primary,
+    backgroundColor: themeColors.primary,
     borderRadius: borderRadius.md,
     paddingVertical: spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 56,
     marginTop: spacing.md,
-    shadowColor: colors.primary,
+    shadowColor: themeColors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -331,7 +333,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    color: colors.textOnPrimary,
+    color: themeColors.textOnPrimary,
     fontWeight: '700',
   },
   loginLink: {
@@ -340,10 +342,10 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   loginText: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
   },
   loginTextBold: {
-    color: colors.accent,
+    color: themeColors.accent,
     fontWeight: '700',
   },
 });

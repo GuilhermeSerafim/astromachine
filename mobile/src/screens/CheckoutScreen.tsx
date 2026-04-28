@@ -16,7 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { colors, spacing, borderRadius, fontSize, shadows } from '../theme';
+import { type AppColors, useThemeColors, spacing, borderRadius, fontSize, shadows } from '../theme';
 import { checkoutSchema, CheckoutForm } from '../utils/validation';
 import { useCartStore } from '../store/cartStore';
 import { useAuthStore } from '../store/authStore';
@@ -36,6 +36,8 @@ export default function CheckoutScreen({ onGoBack, onOrderComplete }: CheckoutSc
   const getTotal = useCartStore((s) => s.getTotal);
   const clearCart = useCartStore((s) => s.clearCart);
   const isLargeFont = useAuthStore((s) => s.isLargeFont);
+  const themeColors = useThemeColors();
+  const styles = createStyles(themeColors);
 
   const fs = isLargeFont
     ? { xs: 15, sm: 17, md: 19, lg: 22, xl: 26 }
@@ -82,7 +84,7 @@ export default function CheckoutScreen({ onGoBack, onOrderComplete }: CheckoutSc
           accessibilityLabel="Voltar"
           accessibilityRole="button"
         >
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+          <Ionicons name="arrow-back" size={24} color={themeColors.textPrimary} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { fontSize: fs.xl }]}>Checkout</Text>
         <View style={{ width: 44 }} />
@@ -95,7 +97,7 @@ export default function CheckoutScreen({ onGoBack, onOrderComplete }: CheckoutSc
           {items.map((item) => (
             <View key={item.product.id} style={styles.summaryRow}>
               <View style={styles.summaryItemInfo}>
-                <Ionicons name="checkmark-circle" size={18} color={colors.success} />
+                <Ionicons name="checkmark-circle" size={18} color={themeColors.success} />
                 <Text style={[styles.summaryItemName, { fontSize: fs.sm }]} numberOfLines={1}>
                   {item.product.name}
                 </Text>
@@ -138,7 +140,7 @@ export default function CheckoutScreen({ onGoBack, onOrderComplete }: CheckoutSc
                 <Ionicons
                   name={method.icon}
                   size={22}
-                  color={paymentMethod === method.key ? colors.primary : colors.textMuted}
+                  color={paymentMethod === method.key ? themeColors.primary : themeColors.textMuted}
                 />
                 <Text
                   style={[
@@ -167,7 +169,7 @@ export default function CheckoutScreen({ onGoBack, onOrderComplete }: CheckoutSc
                 <TextInput
                   style={[styles.input, { fontSize: fs.md }, errors.cardName && styles.inputError]}
                   placeholder="Nome completo"
-                  placeholderTextColor={colors.textMuted}
+                  placeholderTextColor={themeColors.textMuted}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -191,7 +193,7 @@ export default function CheckoutScreen({ onGoBack, onOrderComplete }: CheckoutSc
                 <TextInput
                   style={[styles.input, { fontSize: fs.md }, errors.cardNumber && styles.inputError]}
                   placeholder="0000 0000 0000 0000"
-                  placeholderTextColor={colors.textMuted}
+                  placeholderTextColor={themeColors.textMuted}
                   keyboardType="numeric"
                   maxLength={19}
                   value={value}
@@ -218,7 +220,7 @@ export default function CheckoutScreen({ onGoBack, onOrderComplete }: CheckoutSc
                   <TextInput
                     style={[styles.input, { fontSize: fs.md }, errors.expiry && styles.inputError]}
                     placeholder="MM/AA"
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={themeColors.textMuted}
                     maxLength={5}
                     value={value}
                     onChangeText={onChange}
@@ -242,7 +244,7 @@ export default function CheckoutScreen({ onGoBack, onOrderComplete }: CheckoutSc
                   <TextInput
                     style={[styles.input, { fontSize: fs.md }, errors.cvv && styles.inputError]}
                     placeholder="123"
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={themeColors.textMuted}
                     keyboardType="numeric"
                     maxLength={4}
                     secureTextEntry
@@ -271,10 +273,10 @@ export default function CheckoutScreen({ onGoBack, onOrderComplete }: CheckoutSc
           accessibilityRole="button"
         >
           {isLoading ? (
-            <ActivityIndicator color={colors.textOnPrimary} />
+            <ActivityIndicator color={themeColors.textOnPrimary} />
           ) : (
             <>
-              <Ionicons name="rocket" size={20} color={colors.textOnPrimary} />
+              <Ionicons name="rocket" size={20} color={themeColors.textOnPrimary} />
               <Text style={[styles.confirmText, { fontSize: fs.lg }]}>Confirmar Pedido</Text>
             </>
           )}
@@ -288,10 +290,10 @@ export default function CheckoutScreen({ onGoBack, onOrderComplete }: CheckoutSc
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (themeColors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
   header: {
     flexDirection: 'row',
@@ -305,14 +307,14 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   headerTitle: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '700',
   },
   content: {
@@ -320,15 +322,15 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl,
   },
   section: {
-    backgroundColor: colors.card,
+    backgroundColor: themeColors.card,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     marginBottom: spacing.lg,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   sectionTitle: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '600',
     marginBottom: spacing.md,
   },
@@ -345,28 +347,28 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   summaryItemName: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     flex: 1,
   },
   summaryItemQty: {
-    color: colors.textMuted,
+    color: themeColors.textMuted,
     marginRight: spacing.sm,
   },
   summaryItemPrice: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '500',
   },
   divider: {
     height: 1,
-    backgroundColor: colors.border,
+    backgroundColor: themeColors.border,
     marginVertical: spacing.md,
   },
   totalLabel: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '600',
   },
   totalValue: {
-    color: colors.accent,
+    color: themeColors.accent,
     fontWeight: '700',
   },
   paymentMethods: {
@@ -378,45 +380,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing.md,
     borderRadius: borderRadius.md,
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
     gap: spacing.xs,
   },
   paymentOptionActive: {
-    borderColor: colors.primary,
+    borderColor: themeColors.primary,
     backgroundColor: 'rgba(108, 99, 255, 0.1)',
   },
   paymentLabel: {
-    color: colors.textMuted,
+    color: themeColors.textMuted,
     fontWeight: '500',
   },
   paymentLabelActive: {
-    color: colors.primary,
+    color: themeColors.primary,
   },
   inputGroup: {
     marginBottom: spacing.md,
   },
   label: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     marginBottom: spacing.xs,
     fontWeight: '500',
   },
   input: {
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     minHeight: 48,
   },
   inputError: {
-    borderColor: colors.error,
+    borderColor: themeColors.error,
   },
   errorText: {
-    color: colors.error,
+    color: themeColors.error,
     marginTop: spacing.xs,
   },
   row: {
@@ -424,7 +426,7 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     flexDirection: 'row',
-    backgroundColor: colors.success,
+    backgroundColor: themeColors.success,
     borderRadius: borderRadius.md,
     paddingVertical: spacing.md,
     alignItems: 'center',
@@ -437,11 +439,11 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   confirmText: {
-    color: colors.textOnPrimary,
+    color: themeColors.textOnPrimary,
     fontWeight: '700',
   },
   disclaimer: {
-    color: colors.textMuted,
+    color: themeColors.textMuted,
     textAlign: 'center',
     marginTop: spacing.md,
   },

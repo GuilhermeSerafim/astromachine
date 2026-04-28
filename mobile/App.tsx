@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useAuthStore } from './src/store/authStore';
-import { colors } from './src/theme';
+import { type AppColors, useThemeColors } from './src/theme';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import AppNavigator from './src/navigation/AppNavigator';
@@ -18,6 +18,8 @@ export default function App() {
   const user = useAuthStore((s) => s.user);
   const isLoading = useAuthStore((s) => s.isLoading);
   const loadSession = useAuthStore((s) => s.loadSession);
+  const themeColors = useThemeColors();
+  const styles = createStyles(themeColors);
   const [authScreen, setAuthScreen] = useState<AuthScreen>('login');
   const [dbReady, setDbReady] = useState(false);
 
@@ -36,7 +38,7 @@ export default function App() {
     return (
       <View style={styles.loadingContainer}>
         <StatusBar style="light" />
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={themeColors.primary} />
       </View>
     );
   }
@@ -62,14 +64,14 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (themeColors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },

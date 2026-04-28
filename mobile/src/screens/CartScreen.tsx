@@ -13,7 +13,7 @@ import {
   AccessibilityInfo,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, borderRadius, fontSize, shadows } from '../theme';
+import { type AppColors, useThemeColors, spacing, borderRadius, fontSize, shadows } from '../theme';
 import { useCartStore } from '../store/cartStore';
 import { useAuthStore } from '../store/authStore';
 import { formatCurrency } from '../utils/format';
@@ -30,6 +30,8 @@ export default function CartScreen({ onNavigateToCheckout, onGoBack }: CartScree
   const removeItem = useCartStore((s) => s.removeItem);
   const getTotal = useCartStore((s) => s.getTotal);
   const isLargeFont = useAuthStore((s) => s.isLargeFont);
+  const themeColors = useThemeColors();
+  const styles = createStyles(themeColors);
 
   const fs = isLargeFont
     ? { xs: 15, sm: 17, md: 19, lg: 22, xl: 26 }
@@ -50,7 +52,7 @@ export default function CartScreen({ onNavigateToCheckout, onGoBack }: CartScree
           <Image source={{ uri: item.product.imageUrl }} style={styles.cardImage} />
         ) : (
           <View style={styles.cardImagePlaceholder}>
-            <Ionicons name="desktop-outline" size={28} color={colors.primary} />
+            <Ionicons name="desktop-outline" size={28} color={themeColors.primary} />
           </View>
         )}
       </View>
@@ -70,7 +72,7 @@ export default function CartScreen({ onNavigateToCheckout, onGoBack }: CartScree
             accessibilityLabel="Diminuir quantidade"
             accessibilityRole="button"
           >
-            <Ionicons name="remove" size={18} color={colors.textPrimary} />
+            <Ionicons name="remove" size={18} color={themeColors.textPrimary} />
           </TouchableOpacity>
           <Text style={[styles.quantityText, { fontSize: fs.md }]}>{item.quantity}</Text>
           <TouchableOpacity
@@ -79,7 +81,7 @@ export default function CartScreen({ onNavigateToCheckout, onGoBack }: CartScree
             accessibilityLabel="Aumentar quantidade"
             accessibilityRole="button"
           >
-            <Ionicons name="add" size={18} color={colors.textPrimary} />
+            <Ionicons name="add" size={18} color={themeColors.textPrimary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -90,7 +92,7 @@ export default function CartScreen({ onNavigateToCheckout, onGoBack }: CartScree
         accessibilityLabel={`Remover ${item.product.name}`}
         accessibilityRole="button"
       >
-        <Ionicons name="trash-outline" size={20} color={colors.error} />
+        <Ionicons name="trash-outline" size={20} color={themeColors.error} />
       </TouchableOpacity>
     </View>
   );
@@ -105,7 +107,7 @@ export default function CartScreen({ onNavigateToCheckout, onGoBack }: CartScree
           accessibilityLabel="Voltar"
           accessibilityRole="button"
         >
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+          <Ionicons name="arrow-back" size={24} color={themeColors.textPrimary} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { fontSize: fs.xl }]}>Carrinho</Text>
         <View style={{ width: 44 }} />
@@ -113,7 +115,7 @@ export default function CartScreen({ onNavigateToCheckout, onGoBack }: CartScree
 
       {items.length === 0 ? (
         <View style={styles.emptyState}>
-          <Ionicons name="cart-outline" size={64} color={colors.textMuted} />
+          <Ionicons name="cart-outline" size={64} color={themeColors.textMuted} />
           <Text style={[styles.emptyText, { fontSize: fs.md }]}>Seu carrinho está vazio</Text>
           <Text style={[styles.emptySubtext, { fontSize: fs.sm }]}>
             Explore o catálogo e adicione builds incríveis!
@@ -144,7 +146,7 @@ export default function CartScreen({ onNavigateToCheckout, onGoBack }: CartScree
               accessibilityRole="button"
             >
               <Text style={[styles.checkoutText, { fontSize: fs.lg }]}>Finalizar Compra</Text>
-              <Ionicons name="arrow-forward" size={20} color={colors.textOnPrimary} />
+              <Ionicons name="arrow-forward" size={20} color={themeColors.textOnPrimary} />
             </TouchableOpacity>
           </View>
         </>
@@ -153,10 +155,10 @@ export default function CartScreen({ onNavigateToCheckout, onGoBack }: CartScree
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (themeColors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
   header: {
     flexDirection: 'row',
@@ -170,14 +172,14 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   headerTitle: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '700',
   },
   listContent: {
@@ -186,12 +188,12 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: colors.card,
+    backgroundColor: themeColors.card,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     marginBottom: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
     alignItems: 'center',
     ...shadows.card,
   },
@@ -209,7 +211,7 @@ const styles = StyleSheet.create({
   cardImagePlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -217,12 +219,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardName: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '600',
     marginBottom: 2,
   },
   cardPrice: {
-    color: colors.accent,
+    color: themeColors.accent,
     fontWeight: '600',
     marginBottom: spacing.sm,
   },
@@ -235,14 +237,14 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   quantityText: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '600',
     minWidth: 24,
     textAlign: 'center',
@@ -261,11 +263,11 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   emptyText: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     fontWeight: '600',
   },
   emptySubtext: {
-    color: colors.textMuted,
+    color: themeColors.textMuted,
     textAlign: 'center',
   },
   footer: {
@@ -273,10 +275,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     padding: spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: themeColors.border,
   },
   totalRow: {
     flexDirection: 'row',
@@ -285,16 +287,16 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   totalLabel: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     fontWeight: '500',
   },
   totalValue: {
-    color: colors.accent,
+    color: themeColors.accent,
     fontWeight: '700',
   },
   checkoutButton: {
     flexDirection: 'row',
-    backgroundColor: colors.primary,
+    backgroundColor: themeColors.primary,
     borderRadius: borderRadius.md,
     paddingVertical: spacing.md,
     alignItems: 'center',
@@ -304,7 +306,7 @@ const styles = StyleSheet.create({
     ...shadows.button,
   },
   checkoutText: {
-    color: colors.textOnPrimary,
+    color: themeColors.textOnPrimary,
     fontWeight: '700',
   },
 });

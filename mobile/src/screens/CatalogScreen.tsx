@@ -15,7 +15,7 @@ import {
   AccessibilityInfo,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, borderRadius, fontSize, shadows } from '../theme';
+import { type AppColors, useThemeColors, spacing, borderRadius, fontSize, shadows } from '../theme';
 import { Product } from '../types';
 import { getProducts, isAPIAvailable } from '../services/api';
 import { useCartStore } from '../store/cartStore';
@@ -34,6 +34,8 @@ export default function CatalogScreen({ onNavigateToDetail, onNavigateToAccessib
   const addItem = useCartStore((s) => s.addItem);
   const isLargeFont = useAuthStore((s) => s.isLargeFont);
   const user = useAuthStore((s) => s.user);
+  const themeColors = useThemeColors();
+  const styles = createStyles(themeColors);
 
   const fs = isLargeFont
     ? { xs: 15, sm: 17, md: 19, lg: 22, xl: 26 }
@@ -78,7 +80,7 @@ export default function CatalogScreen({ onNavigateToDetail, onNavigateToAccessib
           <Image source={{ uri: item.imageUrl }} style={styles.cardImage} />
         ) : (
           <View style={styles.cardImagePlaceholder}>
-            <Ionicons name="desktop-outline" size={32} color={colors.primary} />
+            <Ionicons name="desktop-outline" size={32} color={themeColors.primary} />
           </View>
         )}
       </View>
@@ -96,7 +98,7 @@ export default function CatalogScreen({ onNavigateToDetail, onNavigateToAccessib
         accessibilityRole="button"
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <Ionicons name="add" size={24} color={colors.textOnPrimary} />
+        <Ionicons name="add" size={24} color={themeColors.textOnPrimary} />
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -104,7 +106,7 @@ export default function CatalogScreen({ onNavigateToDetail, onNavigateToAccessib
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={themeColors.primary} />
         <Text style={[styles.loadingText, { fontSize: fs.md }]}>Carregando catálogo...</Text>
       </View>
     );
@@ -126,14 +128,14 @@ export default function CatalogScreen({ onNavigateToDetail, onNavigateToAccessib
           accessibilityLabel="Configurações de acessibilidade"
           accessibilityRole="button"
         >
-          <Ionicons name="settings-outline" size={24} color={colors.textPrimary} />
+          <Ionicons name="settings-outline" size={24} color={themeColors.textPrimary} />
         </TouchableOpacity>
       </View>
 
       {/* API Status */}
       {!isAPIAvailable() && (
         <View style={styles.offlineBanner} accessibilityRole="alert">
-          <Ionicons name="cloud-offline-outline" size={16} color={colors.warning} />
+          <Ionicons name="cloud-offline-outline" size={16} color={themeColors.warning} />
           <Text style={[styles.offlineText, { fontSize: fs.xs }]}>
             Modo offline — dados locais
           </Text>
@@ -143,7 +145,7 @@ export default function CatalogScreen({ onNavigateToDetail, onNavigateToAccessib
       {/* Lista */}
       {products.length === 0 ? (
         <View style={styles.emptyState}>
-          <Ionicons name="planet-outline" size={64} color={colors.textMuted} />
+          <Ionicons name="planet-outline" size={64} color={themeColors.textMuted} />
           <Text style={[styles.emptyText, { fontSize: fs.md }]}>Nenhum produto encontrado</Text>
         </View>
       ) : (
@@ -157,8 +159,8 @@ export default function CatalogScreen({ onNavigateToDetail, onNavigateToAccessib
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={colors.primary}
-              colors={[colors.primary]}
+              tintColor={themeColors.primary}
+              colors={[themeColors.primary]}
             />
           }
         />
@@ -167,10 +169,10 @@ export default function CatalogScreen({ onNavigateToDetail, onNavigateToAccessib
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (themeColors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
   centerContent: {
     justifyContent: 'center',
@@ -185,21 +187,21 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
   },
   greeting: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
   },
   headerTitle: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '700',
   },
   accessibilityButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.surface,
+    backgroundColor: themeColors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
   },
   offlineBanner: {
     flexDirection: 'row',
@@ -213,7 +215,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   offlineText: {
-    color: colors.warning,
+    color: themeColors.warning,
     fontWeight: '500',
   },
   listContent: {
@@ -222,12 +224,12 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: colors.card,
+    backgroundColor: themeColors.card,
     borderRadius: borderRadius.lg,
     marginBottom: spacing.md,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
     alignItems: 'center',
     ...shadows.card,
   },
@@ -245,7 +247,7 @@ const styles = StyleSheet.create({
   cardImagePlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: themeColors.surfaceLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -254,30 +256,30 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   cardName: {
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '600',
     marginBottom: 2,
   },
   cardDescription: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     marginBottom: spacing.xs,
     lineHeight: 18,
   },
   cardPrice: {
-    color: colors.accent,
+    color: themeColors.accent,
     fontWeight: '700',
   },
   addButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.primary,
+    backgroundColor: themeColors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     ...shadows.button,
   },
   loadingText: {
-    color: colors.textSecondary,
+    color: themeColors.textSecondary,
     marginTop: spacing.md,
   },
   emptyState: {
@@ -287,6 +289,6 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   emptyText: {
-    color: colors.textMuted,
+    color: themeColors.textMuted,
   },
 });

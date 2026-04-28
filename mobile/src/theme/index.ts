@@ -2,6 +2,8 @@
 // AstroMachine Mobile - Tema Espacial
 // ==========================================
 
+import { useAuthStore } from '../store/authStore';
+
 export const colors = {
   // Fundos
   background: '#0a0a1a',
@@ -40,6 +42,55 @@ export const colors = {
   overlay: 'rgba(0, 0, 0, 0.6)',
   overlayLight: 'rgba(108, 99, 255, 0.1)',
 };
+
+export type AppColors = typeof colors;
+
+export const highContrastColors: AppColors = {
+  // Fundos
+  background: '#000000',
+  surface: '#05070c',
+  surfaceLight: '#111827',
+  card: '#05070c',
+  cardHover: '#101820',
+
+  // Primarias
+  primary: '#ffd400',
+  primaryLight: '#ffe76a',
+  primaryDark: '#c99b00',
+
+  // Acentos
+  accent: '#00f0ff',
+  accentSecondary: '#ff4fa3',
+  warning: '#ffdd33',
+  error: '#ff5c7a',
+  success: '#49ff8a',
+
+  // Texto
+  textPrimary: '#ffffff',
+  textSecondary: '#f4f4f5',
+  textMuted: '#d4d4d8',
+  textOnPrimary: '#000000',
+
+  // Bordas
+  border: '#ffffff',
+  borderLight: '#e5e7eb',
+
+  // Gradientes (para referencia)
+  gradientStart: '#ffd400',
+  gradientEnd: '#00f0ff',
+
+  // Overlay
+  overlay: 'rgba(0, 0, 0, 0.85)',
+  overlayLight: 'rgba(255, 255, 255, 0.16)',
+};
+
+export const getThemeColors = (isHighContrast: boolean): AppColors =>
+  isHighContrast ? highContrastColors : colors;
+
+export function useThemeColors() {
+  const isHighContrast = useAuthStore((s) => s.isHighContrast);
+  return getThemeColors(isHighContrast);
+}
 
 export const spacing = {
   xs: 4,
