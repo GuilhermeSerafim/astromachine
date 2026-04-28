@@ -5,6 +5,7 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing, shadows, fontSize } from '../theme';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
@@ -30,6 +31,15 @@ type Screen =
   | { name: 'accessibility' };
 
 export default function AppNavigator() {
+  return (
+    <SafeAreaProvider>
+      <AppNavigatorContent />
+    </SafeAreaProvider>
+  );
+}
+
+function AppNavigatorContent() {
+  const insets = useSafeAreaInsets();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const itemCount = useCartStore(selectCartItemCount);
@@ -131,7 +141,13 @@ export default function AppNavigator() {
 
       {/* Tab bar para cliente */}
       {showTabBar && (
-        <View style={styles.tabBar} accessibilityRole="tablist">
+        <View
+          style={[
+            styles.tabBar,
+            { paddingBottom: Math.max(insets.bottom + spacing.sm, spacing.md) },
+          ]}
+          accessibilityRole="tablist"
+        >
           <TouchableOpacity
             style={styles.tabItem}
             onPress={() => handleTabPress('home')}
