@@ -1,0 +1,229 @@
+{
+  "generatedAt": "2026-04-29T14:10:57.339Z",
+  "summary": {
+    "totalProducts": 6,
+    "totalServices": 5,
+    "totalUsers": 3,
+    "totalOrders": 0,
+    "revenue": 0,
+    "productsInStock": 6,
+    "productsOutOfStock": 0
+  },
+  "products": {
+    "byCategory": [
+      {
+        "category": "compact",
+        "total": 1,
+        "averagePrice": 7499.9
+      },
+      {
+        "category": "entry",
+        "total": 1,
+        "averagePrice": 3499.9
+      },
+      {
+        "category": "extreme",
+        "total": 1,
+        "averagePrice": 19999.9
+      },
+      {
+        "category": "high-end",
+        "total": 1,
+        "averagePrice": 8999.9
+      },
+      {
+        "category": "mid-range",
+        "total": 1,
+        "averagePrice": 5999.9
+      },
+      {
+        "category": "workstation",
+        "total": 1,
+        "averagePrice": 12499.9
+      }
+    ],
+    "priceRange": {
+      "min": 3499.9,
+      "max": 19999.9,
+      "average": 9749.9
+    }
+  },
+  "services": {
+    "byCategory": [
+      {
+        "category": "iluminacao",
+        "total": 1,
+        "averagePrice": 349.9
+      },
+      {
+        "category": "montagem",
+        "total": 1,
+        "averagePrice": 499.9
+      },
+      {
+        "category": "performance",
+        "total": 1,
+        "averagePrice": 299.9
+      },
+      {
+        "category": "personalizacao",
+        "total": 1,
+        "averagePrice": 599.9
+      },
+      {
+        "category": "visual",
+        "total": 1,
+        "averagePrice": 899.9
+      }
+    ]
+  },
+  "orders": {
+    "byPaymentMethod": [],
+    "recent": []
+  },
+  "records": {
+    "products": [
+      {
+        "id": "1bcf3a0c-7e35-4924-9677-232ac02e6ccf",
+        "name": "Build Andromeda",
+        "description": "PC gamer de alto desempenho com tematica da galaxia Andromeda. RTX 4070, Ryzen 7 7800X3D, 32GB DDR5.",
+        "price": 8999.9,
+        "imageUrl": "",
+        "category": "high-end",
+        "specs": "RTX 4070 | Ryzen 7 7800X3D | 32GB DDR5 | 1TB NVMe | Water Cooler 240mm",
+        "inStock": true,
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      },
+      {
+        "id": "470e2dc4-918c-4eec-bc0a-8a500b6594d4",
+        "name": "PC Orion",
+        "description": "Workstation robusta inspirada na constelacao de Orion. Ideal para criadores de conteudo e streamers.",
+        "price": 12499.9,
+        "imageUrl": "",
+        "category": "workstation",
+        "specs": "RTX 4080 | Ryzen 9 7950X | 64GB DDR5 | 2TB NVMe | Custom Loop",
+        "inStock": true,
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      },
+      {
+        "id": "0b35e4f1-4971-4311-9f7e-e41f58ae833b",
+        "name": "Nebula Prime",
+        "description": "Build intermediaria com visual nebuloso e LEDs RGB sincronizados.",
+        "price": 5999.9,
+        "imageUrl": "",
+        "category": "mid-range",
+        "specs": "RTX 4060 Ti | Ryzen 5 7600X | 16GB DDR5 | 512GB NVMe | Air Cooler",
+        "inStock": true,
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      },
+      {
+        "id": "dea88705-144a-44b6-bdad-b9b0600b2c6b",
+        "name": "Exoplaneta X",
+        "description": "Setup compacto Mini-ITX com design futurista inspirado em exoplanetas.",
+        "price": 7499.9,
+        "imageUrl": "",
+        "category": "compact",
+        "specs": "RTX 4070 | Ryzen 7 7700X | 32GB DDR5 | 1TB NVMe | Mini-ITX Case",
+        "inStock": true,
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      },
+      {
+        "id": "12a0d7b0-156a-45aa-b0f3-810456ad43c6",
+        "name": "Supernova Elite",
+        "description": "O top de linha da AstroMachine. Performance explosiva com componentes de ponta.",
+        "price": 19999.9,
+        "imageUrl": "",
+        "category": "extreme",
+        "specs": "RTX 4090 | Ryzen 9 7950X3D | 128GB DDR5 | 4TB NVMe | Custom Loop Hardline",
+        "inStock": true,
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      },
+      {
+        "id": "49116afc-5a7c-42fb-ad7d-7ad39a0c2aa2",
+        "name": "Cosmos Starter",
+        "description": "Entrada ideal para quem esta comecando no universo gamer.",
+        "price": 3499.9,
+        "imageUrl": "",
+        "category": "entry",
+        "specs": "RTX 4060 | Ryzen 5 5600 | 16GB DDR4 | 512GB NVMe | Air Cooler",
+        "inStock": true,
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      }
+    ],
+    "services": [
+      {
+        "id": "c2628b98-ea4d-4c5b-9b1d-41821487c30e",
+        "name": "Pintura Galaxia",
+        "description": "Pintura aerografada personalizada com tematica de galaxias e nebulosas no gabinete.",
+        "price": 899.9,
+        "estimatedHours": 48,
+        "category": "visual",
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      },
+      {
+        "id": "60eebc58-6e29-4af5-a863-2d3210a549c6",
+        "name": "RGB Cosmico",
+        "description": "Instalacao de sistema de iluminacao RGB sincronizado com efeitos de aurora.",
+        "price": 349.9,
+        "estimatedHours": 4,
+        "category": "iluminacao",
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      },
+      {
+        "id": "6266ae31-7312-431e-8c10-defc529d287e",
+        "name": "Gravacao Lunar",
+        "description": "Gravacao a laser personalizada em paineis laterais com motivos lunares.",
+        "price": 599.9,
+        "estimatedHours": 24,
+        "category": "personalizacao",
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      },
+      {
+        "id": "0f4553d2-3db6-4a1f-860b-2bdaa8eff410",
+        "name": "Montagem Premium",
+        "description": "Servico de montagem completa com cable management profissional e teste de estresse.",
+        "price": 499.9,
+        "estimatedHours": 8,
+        "category": "montagem",
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      },
+      {
+        "id": "74b3fb89-bd99-45a9-b61a-9a3802772af4",
+        "name": "Overclock Estelar",
+        "description": "Ajuste fino de overclock em CPU e GPU com monitoramento termico.",
+        "price": 299.9,
+        "estimatedHours": 6,
+        "category": "performance",
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      }
+    ],
+    "appointments": [
+      {
+        "id": "e0bac261-095d-493e-8342-1dc6ce4ecc4e",
+        "userId": "d4988a1b-2157-4954-93db-232beb997280",
+        "productId": "1bcf3a0c-7e35-4924-9677-232ac02e6ccf",
+        "serviceIds": [
+          "60eebc58-6e29-4af5-a863-2d3210a549c6",
+          "c2628b98-ea4d-4c5b-9b1d-41821487c30e"
+        ],
+        "date": "2026-04-15T14:00:00.000Z",
+        "status": "confirmed",
+        "notes": "Cliente deseja pintura estilo Via Lactea com RGB combinando.",
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      },
+      {
+        "id": "6173282f-6433-4706-9911-f7fabac7824d",
+        "userId": "d4988a1b-2157-4954-93db-232beb997280",
+        "productId": "0b35e4f1-4971-4311-9f7e-e41f58ae833b",
+        "serviceIds": [
+          "0f4553d2-3db6-4a1f-860b-2bdaa8eff410"
+        ],
+        "date": "2026-04-20T10:00:00.000Z",
+        "status": "pending",
+        "notes": "Montagem basica com teste de estresse.",
+        "createdAt": "2026-04-27T23:02:57.857Z"
+      }
+    ],
+    "orders": []
+  }
+}

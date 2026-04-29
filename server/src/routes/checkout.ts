@@ -3,7 +3,6 @@
 // ==========================================
 
 import { Router, Response } from 'express';
-import { v4 as uuid } from 'uuid';
 import { db } from '../services/database';
 import { authMiddleware, AuthRequest } from '../middlewares/auth';
 import { OrderItem } from '../models/types';
@@ -45,17 +44,13 @@ router.post('/simulate', authMiddleware, (req: AuthRequest, res: Response): void
     orderItems.push(orderItem);
   }
 
-  const order = {
-    id: uuid(),
+  const order = db.createOrder({
     userId: req.user!.userId,
     items: orderItems,
     totalAmount,
     status: 'confirmed' as const,
     paymentMethod: paymentMethod + (cardLastFour ? ` (**** ${cardLastFour})` : ''),
-    createdAt: new Date().toISOString(),
-  };
-
-  db.orders.push(order);
+  });
 
   // Simular um delay de "processamento"
   res.status(201).json({

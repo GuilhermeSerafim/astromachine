@@ -5,21 +5,70 @@
 import { Product, Service, AuthResponse, Appointment, Order } from '../types';
 import { seedProducts, seedServices } from '../db/seedData';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
+import Constants from 'expo-constants';
+import { NativeModules, Platform } from 'react-native';
+import { getApiBaseUrlCandidates } from './apiConfig';
 
-const API_URL =
-  process.env.EXPO_PUBLIC_API_URL ||
-  (Platform.OS === 'android' ? 'http://10.0.2.2:3001' : 'http://localhost:3001');
 const TIMEOUT_MS = 5000;
+const API_PORT = '3001';
 
 // Flag de disponibilidade da API
 let apiAvailable = true;
+let cachedApiBaseUrl: string | null = null;
 
 async function getToken(): Promise<string | null> {
   return AsyncStorage.getItem('auth_token');
 }
 
-async function fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
+function getBundleHost(): string | null {
+  const scriptUrl = NativeModules?.SourceCode?.scriptURL;
+  if (!scriptUrl || typeof scriptUrl !== 'string') {
+    return null;
+  }
+
+  const hostMatch = scriptUrl.match(/^https?:\/\/([^/:]+)(?::\d+)?\//i);
+  return hostMatch?.[1] ?? null;
+}
+
+function getExpoHost(): string | null {
+  const candidates = [
+    Constants?.expoConfig?.hostUri,
+    Constants?.manifest2?.extra?.expoClient?.hostUri,
+    Constants?.manifest2?.extra?.expoGo?.debuggerHost,
+    Constants?.manifest?.debuggerHost,
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate !== 'string' || !candidate.trim()) {
+      continue;
+    }
+
+    const host = candidate.trim().split(':')[0];
+    if (host) {
+      return host;
+    }
+  }
+
+  return null;
+}
+
+function getRuntimeApiCandidates(): string[] {
+  const candidates = getApiBaseUrlCandidates({
+    platformOS: Platform.OS,
+    expoHost: getExpoHost(),
+    bundleHost: getBundleHost(),
+    envUrl: process.env.EXPO_PUBLIC_API_URL,
+    port: API_PORT,
+  });
+
+  if (!cachedApiBaseUrl) {
+    return candidates;
+  }
+
+  return [cachedApiBaseUrl, ...candidates.filter((candidate) => candidate !== cachedApiBaseUrl)];
+}
+
+async function fetchWithTimeout(path: string, options: RequestInit = {}): Promise<Response> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
@@ -33,13 +82,26 @@ async function fetchWithTimeout(url: string, options: RequestInit = {}): Promise
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      signal: controller.signal,
-    });
-    apiAvailable = true;
-    return response;
+    let lastError: unknown = null;
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+
+    for (const baseUrl of getRuntimeApiCandidates()) {
+      try {
+        const response = await fetch(`${baseUrl}${normalizedPath}`, {
+          ...options,
+          headers,
+          signal: controller.signal,
+        });
+        cachedApiBaseUrl = baseUrl;
+        apiAvailable = true;
+        return response;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    apiAvailable = false;
+    throw lastError || new Error('API indisponivel');
   } catch (error) {
     apiAvailable = false;
     throw error;
@@ -52,7 +114,7 @@ async function fetchWithTimeout(url: string, options: RequestInit = {}): Promise
 
 export async function loginAPI(email: string, password: string): Promise<AuthResponse> {
   try {
-    const res = await fetchWithTimeout(`${API_URL}/auth/login`, {
+    const res = await fetchWithTimeout('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
@@ -82,7 +144,7 @@ export async function loginAPI(email: string, password: string): Promise<AuthRes
 
 export async function registerAPI(name: string, email: string, password: string): Promise<AuthResponse> {
   try {
-    const res = await fetchWithTimeout(`${API_URL}/auth/register`, {
+    const res = await fetchWithTimeout('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ name, email, password }),
     });
@@ -108,7 +170,7 @@ export async function registerAPI(name: string, email: string, password: string)
 
 export async function getProducts(): Promise<Product[]> {
   try {
-    const res = await fetchWithTimeout(`${API_URL}/products`);
+    const res = await fetchWithTimeout('/products');
     if (!res.ok) throw new Error('Erro ao buscar produtos');
     return res.json();
   } catch {
@@ -119,7 +181,7 @@ export async function getProducts(): Promise<Product[]> {
 
 export async function getProductById(id: string): Promise<Product | null> {
   try {
-    const res = await fetchWithTimeout(`${API_URL}/products/${id}`);
+    const res = await fetchWithTimeout(`/products/${id}`);
     if (!res.ok) throw new Error('Produto não encontrado');
     return res.json();
   } catch {
@@ -129,7 +191,7 @@ export async function getProductById(id: string): Promise<Product | null> {
 
 export async function createProduct(product: Partial<Product>): Promise<Product> {
   try {
-    const res = await fetchWithTimeout(`${API_URL}/products`, {
+    const res = await fetchWithTimeout('/products', {
       method: 'POST',
       body: JSON.stringify(product),
     });
@@ -158,7 +220,7 @@ export async function createProduct(product: Partial<Product>): Promise<Product>
 
 export async function updateProduct(id: string, product: Partial<Product>): Promise<Product> {
   try {
-    const res = await fetchWithTimeout(`${API_URL}/products/${id}`, {
+    const res = await fetchWithTimeout(`/products/${id}`, {
       method: 'PUT',
       body: JSON.stringify(product),
     });
@@ -180,7 +242,7 @@ export async function updateProduct(id: string, product: Partial<Product>): Prom
 
 export async function deleteProduct(id: string): Promise<void> {
   try {
-    const res = await fetchWithTimeout(`${API_URL}/products/${id}`, {
+    const res = await fetchWithTimeout(`/products/${id}`, {
       method: 'DELETE',
     });
     if (!res.ok) throw new Error('Erro ao excluir produto');
@@ -197,7 +259,7 @@ export async function deleteProduct(id: string): Promise<void> {
 
 export async function getServices(): Promise<Service[]> {
   try {
-    const res = await fetchWithTimeout(`${API_URL}/services`);
+    const res = await fetchWithTimeout('/services');
     if (!res.ok) throw new Error('Erro ao buscar serviços');
     return res.json();
   } catch {
@@ -214,7 +276,7 @@ export async function simulateCheckout(
   cardLastFour?: string
 ): Promise<Order> {
   try {
-    const res = await fetchWithTimeout(`${API_URL}/checkout/simulate`, {
+    const res = await fetchWithTimeout('/checkout/simulate', {
       method: 'POST',
       body: JSON.stringify({ items, paymentMethod, cardLastFour }),
     });

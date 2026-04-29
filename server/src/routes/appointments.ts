@@ -3,7 +3,6 @@
 // ==========================================
 
 import { Router, Response } from 'express';
-import { v4 as uuid } from 'uuid';
 import { db } from '../services/database';
 import { authMiddleware, AuthRequest } from '../middlewares/auth';
 
@@ -28,18 +27,15 @@ router.post('/', authMiddleware, (req: AuthRequest, res: Response): void => {
     return;
   }
 
-  const newAppointment = {
-    id: uuid(),
+  const newAppointment = db.createAppointment({
     userId: req.user!.userId,
     productId: productId || undefined,
     serviceIds: serviceIds || [],
     date,
     status: 'pending' as const,
     notes: notes || '',
-    createdAt: new Date().toISOString(),
-  };
+  });
 
-  db.appointments.push(newAppointment);
   res.status(201).json(newAppointment);
 });
 

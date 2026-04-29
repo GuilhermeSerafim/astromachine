@@ -4,7 +4,6 @@
 
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import { v4 as uuid } from 'uuid';
 import { db } from '../services/database';
 import { generateToken } from '../middlewares/auth';
 
@@ -27,16 +26,12 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = {
-      id: uuid(),
+    const newUser = db.createUser({
       name,
       email,
       password: hashedPassword,
       role: 'client' as const,
-      createdAt: new Date().toISOString(),
-    };
-
-    db.users.push(newUser);
+    });
 
     const token = generateToken({ userId: newUser.id, role: newUser.role });
 

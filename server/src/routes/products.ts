@@ -3,7 +3,6 @@
 // ==========================================
 
 import { Router, Request, Response } from 'express';
-import { v4 as uuid } from 'uuid';
 import { db } from '../services/database';
 import { authMiddleware, adminMiddleware, AuthRequest } from '../middlewares/auth';
 
@@ -18,7 +17,7 @@ router.get('/', (_req: Request, res: Response): void => {
 router.get('/:id', (req: Request, res: Response): void => {
   const product = db.findProductById(req.params.id);
   if (!product) {
-    res.status(404).json({ error: 'Produto não encontrado.' });
+    res.status(404).json({ error: 'Produto nao encontrado.' });
     return;
   }
   res.json(product);
@@ -26,61 +25,45 @@ router.get('/:id', (req: Request, res: Response): void => {
 
 // POST /products (admin only)
 router.post('/', authMiddleware, adminMiddleware, (req: AuthRequest, res: Response): void => {
-  const { name, description, price, imageUrl, category, specs } = req.body;
+  const { name, description, price, imageUrl, category, specs, inStock } = req.body;
 
   if (!name || !description || price === undefined) {
-    res.status(400).json({ error: 'Nome, descrição e preço são obrigatórios.' });
+    res.status(400).json({ error: 'Nome, descricao e preco sao obrigatorios.' });
     return;
   }
 
-  const newProduct = {
-    id: uuid(),
+  const newProduct = db.createProduct({
     name,
     description,
     price: Number(price),
     imageUrl: imageUrl || '',
     category: category || 'geral',
     specs: specs || '',
-    inStock: true,
-    createdAt: new Date().toISOString(),
-  };
+    inStock: inStock ?? true,
+  });
 
-  db.products.push(newProduct);
   res.status(201).json(newProduct);
 });
 
 // PUT /products/:id (admin only)
 router.put('/:id', authMiddleware, adminMiddleware, (req: AuthRequest, res: Response): void => {
-  const index = db.products.findIndex((p) => p.id === req.params.id);
-  if (index === -1) {
-    res.status(404).json({ error: 'Produto não encontrado.' });
+  const updatedProduct = db.updateProduct(req.params.id, req.body);
+  if (!updatedProduct) {
+    res.status(404).json({ error: 'Produto nao encontrado.' });
     return;
   }
 
-  const { name, description, price, imageUrl, category, specs, inStock } = req.body;
-  db.products[index] = {
-    ...db.products[index],
-    ...(name !== undefined && { name }),
-    ...(description !== undefined && { description }),
-    ...(price !== undefined && { price: Number(price) }),
-    ...(imageUrl !== undefined && { imageUrl }),
-    ...(category !== undefined && { category }),
-    ...(specs !== undefined && { specs }),
-    ...(inStock !== undefined && { inStock }),
-  };
-
-  res.json(db.products[index]);
+  res.json(updatedProduct);
 });
 
 // DELETE /products/:id (admin only)
 router.delete('/:id', authMiddleware, adminMiddleware, (req: AuthRequest, res: Response): void => {
-  const index = db.products.findIndex((p) => p.id === req.params.id);
-  if (index === -1) {
-    res.status(404).json({ error: 'Produto não encontrado.' });
+  const deleted = db.deleteProduct(req.params.id);
+  if (!deleted) {
+    res.status(404).json({ error: 'Produto nao encontrado.' });
     return;
   }
 
-  db.products.splice(index, 1);
   res.status(204).send();
 });
 

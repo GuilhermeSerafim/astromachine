@@ -250,6 +250,32 @@ curl http://localhost:3001/products
 
 ---
 
+## Documentacao da Fase 3
+
+| Documento / Artefato | Caminho | Conteudo |
+|----------------------|---------|----------|
+| Relatorio de Status | `docs/fase3-status-report.md` | Sprint Review, impedimentos e percentual de conclusao |
+| Schema SQLite | `docs/fase3-database-schema.md` | Tabelas, relacionamentos, seed e estrategia de persistencia |
+| Dados JSON | `docs/fase3-dashboard-data.json` | Dados para dashboard de Analise de Dados e Estatistica |
+| Banco SQLite | `server/data/astromachine.db` | Persistencia central do backend |
+
+### Scripts uteis da Fase 3
+
+```bash
+cd server
+npm test
+npm run build
+npm run export:dashboard
+```
+
+```bash
+cd mobile
+npm run test:unit
+npx tsc --noEmit
+```
+
+---
+
 ## Equipe
 
 - **Guilherme** — Desenvolvimento Mobile e Backend
