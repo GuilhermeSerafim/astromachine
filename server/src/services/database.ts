@@ -1,3 +1,4 @@
+import { readDemoSeedCredentials } from "../config/demoSeedConfig";
 // ==========================================
 // AstroMachine Server - Banco SQLite
 // ==========================================
@@ -556,137 +557,144 @@ export class Database {
   }
 
   private seed(): void {
-    const usersCount = this.connection.prepare('SELECT COUNT(*) AS count FROM users').get() as { count: number };
-    if (usersCount.count > 0) {
-      return;
-    }
+    // Keep the guard and all fixture writes inside the same synchronous transaction.
+    const seedAtomically = this.connection.transaction(() => {
+      const usersCount = this.connection.prepare('SELECT COUNT(*) AS count FROM users').get() as { count: number };
+      if (usersCount.count > 0) {
+        return;
+      }
 
-    const seedTime = nowIso();
-    const adminId = uuid();
-    const clientId = uuid();
+      const demoSeed = readDemoSeedCredentials();
+      if (!demoSeed) return;
 
-    this.createUser({
-      id: adminId,
-      name: 'Admin AstroMachine',
-      email: 'admin@astromachine.com',
-      password: bcrypt.hashSync('admin123', 10),
-      role: 'admin',
-      createdAt: seedTime,
+      const seedTime = nowIso();
+      const adminId = uuid();
+      const clientId = uuid();
+
+      this.createUser({
+        id: adminId,
+        name: 'Admin AstroMachine',
+        email: demoSeed.admin.email,
+        password: bcrypt.hashSync(demoSeed.admin.password, 10),
+        role: 'admin',
+        createdAt: seedTime,
+      });
+
+      this.createUser({
+        id: clientId,
+        name: 'Guilherme Cliente',
+        email: demoSeed.client.email,
+        password: bcrypt.hashSync(demoSeed.client.password, 10),
+        role: 'client',
+        createdAt: seedTime,
+      });
+
+      const products = [
+        {
+          name: 'Build Andromeda',
+          description:
+            'PC gamer de alto desempenho com tematica da galaxia Andromeda. RTX 4070, Ryzen 7 7800X3D, 32GB DDR5.',
+          price: 8999.9,
+          category: 'high-end',
+          specs: 'RTX 4070 | Ryzen 7 7800X3D | 32GB DDR5 | 1TB NVMe | Water Cooler 240mm',
+        },
+        {
+          name: 'PC Orion',
+          description:
+            'Workstation robusta inspirada na constelacao de Orion. Ideal para criadores de conteudo e streamers.',
+          price: 12499.9,
+          category: 'workstation',
+          specs: 'RTX 4080 | Ryzen 9 7950X | 64GB DDR5 | 2TB NVMe | Custom Loop',
+        },
+        {
+          name: 'Nebula Prime',
+          description: 'Build intermediaria com visual nebuloso e LEDs RGB sincronizados.',
+          price: 5999.9,
+          category: 'mid-range',
+          specs: 'RTX 4060 Ti | Ryzen 5 7600X | 16GB DDR5 | 512GB NVMe | Air Cooler',
+        },
+        {
+          name: 'Exoplaneta X',
+          description: 'Setup compacto Mini-ITX com design futurista inspirado em exoplanetas.',
+          price: 7499.9,
+          category: 'compact',
+          specs: 'RTX 4070 | Ryzen 7 7700X | 32GB DDR5 | 1TB NVMe | Mini-ITX Case',
+        },
+        {
+          name: 'Supernova Elite',
+          description: 'O top de linha da AstroMachine. Performance explosiva com componentes de ponta.',
+          price: 19999.9,
+          category: 'extreme',
+          specs: 'RTX 4090 | Ryzen 9 7950X3D | 128GB DDR5 | 4TB NVMe | Custom Loop Hardline',
+        },
+        {
+          name: 'Cosmos Starter',
+          description: 'Entrada ideal para quem esta comecando no universo gamer.',
+          price: 3499.9,
+          category: 'entry',
+          specs: 'RTX 4060 | Ryzen 5 5600 | 16GB DDR4 | 512GB NVMe | Air Cooler',
+        },
+      ].map((product) => this.createProduct({ ...product, imageUrl: '', inStock: true, createdAt: seedTime }));
+
+      const services = [
+        {
+          name: 'Pintura Galaxia',
+          description: 'Pintura aerografada personalizada com tematica de galaxias e nebulosas no gabinete.',
+          price: 899.9,
+          estimatedHours: 48,
+          category: 'visual',
+        },
+        {
+          name: 'RGB Cosmico',
+          description: 'Instalacao de sistema de iluminacao RGB sincronizado com efeitos de aurora.',
+          price: 349.9,
+          estimatedHours: 4,
+          category: 'iluminacao',
+        },
+        {
+          name: 'Gravacao Lunar',
+          description: 'Gravacao a laser personalizada em paineis laterais com motivos lunares.',
+          price: 599.9,
+          estimatedHours: 24,
+          category: 'personalizacao',
+        },
+        {
+          name: 'Montagem Premium',
+          description: 'Servico de montagem completa com cable management profissional e teste de estresse.',
+          price: 499.9,
+          estimatedHours: 8,
+          category: 'montagem',
+        },
+        {
+          name: 'Overclock Estelar',
+          description: 'Ajuste fino de overclock em CPU e GPU com monitoramento termico.',
+          price: 299.9,
+          estimatedHours: 6,
+          category: 'performance',
+        },
+      ].map((service) => this.createService({ ...service, createdAt: seedTime }));
+
+      this.createAppointment({
+        userId: clientId,
+        productId: products[0].id,
+        serviceIds: [services[0].id, services[1].id],
+        date: '2026-04-15T14:00:00.000Z',
+        status: 'confirmed',
+        notes: 'Cliente deseja pintura estilo Via Lactea com RGB combinando.',
+        createdAt: seedTime,
+      });
+
+      this.createAppointment({
+        userId: clientId,
+        productId: products[2].id,
+        serviceIds: [services[3].id],
+        date: '2026-04-20T10:00:00.000Z',
+        status: 'pending',
+        notes: 'Montagem basica com teste de estresse.',
+        createdAt: seedTime,
+      });
     });
-
-    this.createUser({
-      id: clientId,
-      name: 'Guilherme Cliente',
-      email: 'guilherme@email.com',
-      password: bcrypt.hashSync('cliente123', 10),
-      role: 'client',
-      createdAt: seedTime,
-    });
-
-    const products = [
-      {
-        name: 'Build Andromeda',
-        description:
-          'PC gamer de alto desempenho com tematica da galaxia Andromeda. RTX 4070, Ryzen 7 7800X3D, 32GB DDR5.',
-        price: 8999.9,
-        category: 'high-end',
-        specs: 'RTX 4070 | Ryzen 7 7800X3D | 32GB DDR5 | 1TB NVMe | Water Cooler 240mm',
-      },
-      {
-        name: 'PC Orion',
-        description:
-          'Workstation robusta inspirada na constelacao de Orion. Ideal para criadores de conteudo e streamers.',
-        price: 12499.9,
-        category: 'workstation',
-        specs: 'RTX 4080 | Ryzen 9 7950X | 64GB DDR5 | 2TB NVMe | Custom Loop',
-      },
-      {
-        name: 'Nebula Prime',
-        description: 'Build intermediaria com visual nebuloso e LEDs RGB sincronizados.',
-        price: 5999.9,
-        category: 'mid-range',
-        specs: 'RTX 4060 Ti | Ryzen 5 7600X | 16GB DDR5 | 512GB NVMe | Air Cooler',
-      },
-      {
-        name: 'Exoplaneta X',
-        description: 'Setup compacto Mini-ITX com design futurista inspirado em exoplanetas.',
-        price: 7499.9,
-        category: 'compact',
-        specs: 'RTX 4070 | Ryzen 7 7700X | 32GB DDR5 | 1TB NVMe | Mini-ITX Case',
-      },
-      {
-        name: 'Supernova Elite',
-        description: 'O top de linha da AstroMachine. Performance explosiva com componentes de ponta.',
-        price: 19999.9,
-        category: 'extreme',
-        specs: 'RTX 4090 | Ryzen 9 7950X3D | 128GB DDR5 | 4TB NVMe | Custom Loop Hardline',
-      },
-      {
-        name: 'Cosmos Starter',
-        description: 'Entrada ideal para quem esta comecando no universo gamer.',
-        price: 3499.9,
-        category: 'entry',
-        specs: 'RTX 4060 | Ryzen 5 5600 | 16GB DDR4 | 512GB NVMe | Air Cooler',
-      },
-    ].map((product) => this.createProduct({ ...product, imageUrl: '', inStock: true, createdAt: seedTime }));
-
-    const services = [
-      {
-        name: 'Pintura Galaxia',
-        description: 'Pintura aerografada personalizada com tematica de galaxias e nebulosas no gabinete.',
-        price: 899.9,
-        estimatedHours: 48,
-        category: 'visual',
-      },
-      {
-        name: 'RGB Cosmico',
-        description: 'Instalacao de sistema de iluminacao RGB sincronizado com efeitos de aurora.',
-        price: 349.9,
-        estimatedHours: 4,
-        category: 'iluminacao',
-      },
-      {
-        name: 'Gravacao Lunar',
-        description: 'Gravacao a laser personalizada em paineis laterais com motivos lunares.',
-        price: 599.9,
-        estimatedHours: 24,
-        category: 'personalizacao',
-      },
-      {
-        name: 'Montagem Premium',
-        description: 'Servico de montagem completa com cable management profissional e teste de estresse.',
-        price: 499.9,
-        estimatedHours: 8,
-        category: 'montagem',
-      },
-      {
-        name: 'Overclock Estelar',
-        description: 'Ajuste fino de overclock em CPU e GPU com monitoramento termico.',
-        price: 299.9,
-        estimatedHours: 6,
-        category: 'performance',
-      },
-    ].map((service) => this.createService({ ...service, createdAt: seedTime }));
-
-    this.createAppointment({
-      userId: clientId,
-      productId: products[0].id,
-      serviceIds: [services[0].id, services[1].id],
-      date: '2026-04-15T14:00:00.000Z',
-      status: 'confirmed',
-      notes: 'Cliente deseja pintura estilo Via Lactea com RGB combinando.',
-      createdAt: seedTime,
-    });
-
-    this.createAppointment({
-      userId: clientId,
-      productId: products[2].id,
-      serviceIds: [services[3].id],
-      date: '2026-04-20T10:00:00.000Z',
-      status: 'pending',
-      notes: 'Montagem basica com teste de estresse.',
-      createdAt: seedTime,
-    });
+    seedAtomically();
   }
 
   private getAppointmentServiceIds(appointmentId: string): string[] {

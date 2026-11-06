@@ -13,7 +13,7 @@ Projeto acadêmico — PI IV (Projeto Integrador IV) — Desenvolvimento para Di
 - [Estrutura do Projeto](#estrutura-do-projeto)
 - [Pré-requisitos](#pré-requisitos)
 - [Instalação e Execução](#instalação-e-execução)
-- [Credenciais de Demonstração](#credenciais-de-demonstração)
+- [Contas de demonstração locais](#contas-de-demonstração-locais)
 - [API — Endpoints](#api--endpoints)
 - [Documentação da Fase 2](#documentação-da-fase-2)
 - [Funcionalidades](#funcionalidades)
@@ -95,7 +95,7 @@ astromachine/
 │       │   ├── appointments.ts  # Agendamentos
 │       │   └── checkout.ts      # Simulação de pagamento
 │       └── services/
-│           └── database.ts      # Banco em memória + seed
+│           └── database.ts      # SQLite local + seed de demonstração opt-in
 ├── docs/                        # Documentação Fase 2
 │   ├── fase2-der.md             # DER em Mermaid
 │   ├── fase2-status-report.md   # Sprint Review
@@ -113,7 +113,7 @@ astromachine/
 
 ## Pré-requisitos
 
-- **Node.js** >= 18.x
+- **Node.js 22.x** para o backend (validação local com 22.18.0)
 - **npm** >= 9.x
 - **Expo CLI**: `npm install -g expo-cli` (opcional, pode usar `npx expo`)
 - **Expo Go** instalado no celular (Android/iOS) para testar
@@ -125,21 +125,34 @@ astromachine/
 ### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/astromachine.git
+git clone https://github.com/GuilhermeSerafim/astromachine.git
 cd astromachine
 ```
 
 ### 2. Configurar variáveis de ambiente
 
-```bash
-copy .env.example .env
+O backend lê `process.env`; seus scripts não carregam `.env` automaticamente.
+Copiar o exemplo da raiz não injeta variáveis no servidor. Para desenvolvimento
+sem dados de demonstração, não é necessário fornecer as variáveis `DEMO_*`:
+o seed fica desligado por padrão.
+
+Defina as variáveis necessárias no processo que inicia o backend. Por exemplo,
+no PowerShell, antes de `npm run dev`:
+
+```powershell
+$env:NODE_ENV = "development"
+$env:ENABLE_DEMO_SEED = "false"
 ```
+
+`SERVER_PORT` é opcional (padrão 3001). `ASTROMACHINE_DB_PATH` permite escolher
+o arquivo SQLite; sem ela, o caminho é `data/astromachine.db` relativo ao diretório
+de execução. Nunca aponte testes ou demonstrações descartáveis para uma base real.
 
 ### 3. Instalar dependências e rodar o Backend
 
 ```bash
 cd server
-npm install
+npm ci
 npm run dev
 ```
 
@@ -147,6 +160,8 @@ O servidor iniciará em `http://localhost:3001`.
 Health check: `http://localhost:3001/health`
 
 ### 4. Instalar dependências e rodar o Mobile
+
+Em outro terminal, a partir da raiz do repositório:
 
 ```bash
 cd mobile
@@ -168,7 +183,7 @@ curl http://localhost:3001/health
 # Login
 curl -X POST http://localhost:3001/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@astromachine.com","password":"admin123"}'
+  -d "$LOGIN_JSON"
 
 # Listar produtos
 curl http://localhost:3001/products
@@ -176,16 +191,69 @@ curl http://localhost:3001/products
 
 ---
 
-## Credenciais de Demonstração
+## Contas de demonstração locais
 
-| Tipo | Email | Senha |
-|------|-------|-------|
-| Admin | `admin@astromachine.com` | `admin123` |
-| Cliente | `guilherme@email.com` | `cliente123` |
+O seed de demonstração fica desabilitado por padrão. Para uma base local nova e
+descartável, o responsável pode habilitar `ENABLE_DEMO_SEED=true` apenas com
+`NODE_ENV=development` e fornecer `DEMO_ADMIN_EMAIL`, `DEMO_ADMIN_PASSWORD`,
+`DEMO_CLIENT_EMAIL` e `DEMO_CLIENT_PASSWORD` ao processo do servidor. Não há
+credenciais padrão nem fallback. O template `server/.env.demo.example` contém
+somente nomes e campos vazios; ele não é carregado implicitamente.
 
-> **Nota**: Mesmo sem o servidor rodando, o app funciona com dados locais (fallback).
+Se preferir um arquivo privado para a demonstração local, no diretório `server`
+copie `.env.demo.example` para `.env`, preencha os quatro campos com valores
+próprios e acrescente `NODE_ENV=development` e `ASTROMACHINE_DB_PATH` apontando
+para uma base descartável nova. Altere `ENABLE_DEMO_SEED` para `true` somente
+quando quiser esse conjunto. O `.env` é ignorado pelo Git. Após `npm run build`,
+o carregamento explícito pelo Node 22 é:
 
----
+```bash
+node --env-file=.env dist/index.js
+```
+
+Esse comando inicia o servidor; não é o comando usado pela suíte de testes.
+Não preencha nem versione `.env.demo.example` com dados de acesso.
+
+Em uma base nova, o padrão deixa ausentes os dados de demonstração do backend:
+dois usuários, seis produtos, cinco serviços e dois agendamentos. Esse seed
+não cria pedidos. A ausência do catálogo e dos agendamentos de exemplo é um
+efeito deliberado do opt-in, que o responsável precisa aceitar. O seed mobile
+não foi revisado neste pacote.
+
+Os emails são aparados nas extremidades e precisam ser distintos; o seed rejeita
+também variantes que diferem apenas por maiúsculas/minúsculas, por precaução.
+Essa restrição não redefine a normalização do login nem altera o email armazenado
+além do trim. A gravação do conjunto usa uma transação síncrona única; falhas
+abortam o conjunto. A suíte de integração abaixo usa o driver instalado e bancos
+SQLite descartáveis, incluindo falhas nas escritas internas dos agendamentos.
+
+Os valores são exclusivos do servidor: não usar prefixos EXPO_PUBLIC nem incluí-los
+no aplicativo mobile, repositório, logs ou documentação. Para o exemplo de login,
+`LOGIN_JSON` deve ser definido privadamente com uma conta local própria; o exemplo
+não contém acesso pronto e não deve ser executado contra serviço de produção.
+
+Desabilitar ou alterar o seed não modifica contas já persistidas. O administrador
+deve tratar separadamente contas, sessões e eventual reutilização das credenciais
+anteriormente publicadas. Remover exemplos não equivale a revogação.
+
+### Verificação do seed com SQLite descartável
+
+No diretório `server`, após instalar as dependências:
+
+```bash
+npm run build
+node --test --test-concurrency=1 tests/demo-seed.integration.cjs
+```
+
+A suíte não inicia HTTP nem usa contas publicadas. Cada caso roda em processo
+separado e cria arquivos SQLite temporários com dados sintéticos. Ela cobre seed
+desligado, configuração inválida, sucesso, preservação de usuários existentes e
+falhas em 18 INSERTs: duas contas, seis produtos, cinco serviços, dois agendamentos
+e três vínculos em `appointment_services`. Os casos de falha verificam rollback
+completo e uma nova tentativa bem-sucedida após retirar o gatilho sintético.
+Os arquivos temporários ficam disponíveis para inspeção; `ASTRO_TEST_ROOT`
+permite definir a pasta de testes. Isso não verifica contas, instalações ou bases
+já utilizadas fora desses cenários locais.
 
 ## API — Endpoints
 
